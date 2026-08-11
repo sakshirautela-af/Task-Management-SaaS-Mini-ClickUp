@@ -1,18 +1,21 @@
-form{
-    display: grid;
+form {
+  display: grid;
 }
-.name{
-    width: 100px;
-}
-.user-name{
-    display: flex;
-}
-input{
-    width: 400px;
-}
-button{
 
+.name {
+  width: 100px;
 }
-.sign-up{
-    margin: 15%;
+
+.user-name {
+  display: flex;
+}
+
+input {
+  width: 400px;
+}
+
+button {}
+
+.sign-up {
+  margin: 15%;
 }
