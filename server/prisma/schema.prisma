@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Users {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  password  String
+  firstName String
+  lastName  String
+  createAt  DateTime   @default(now())
+  updateAt  DateTime   @updatedAt
+  phone     String     @unique
+  projects  Projects[] @relation("ProjectsToUsers")
+}
+
+model Projects {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String
+  createAt    DateTime @default(now())
+  updateAt    DateTime @updatedAt
+  timeline    DateTime
+  tasks       Tasks[]
+  users       Users[]  @relation("ProjectsToUsers")
+}
+
+model Tasks {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  description String
+  time        DateTime     @default(now())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  dueDate     DateTime
+  priority    TaskPriority @default(NORMAL)
+  projectId   Int
+  status      TaskStatus   @default(PENDING)
+  project     Projects     @relation(fields: [projectId], references: [id])
+
+  @@index([projectId], map: "Tasks_projectId_fkey")
+}
+
+
+enum TaskStatus {
+ PENDING
+ COMPLETED
+ FAILED
+ INPROGRESS
+ CANCELLED
+}
+
+
+enum TaskPriority {
+ LOW
+ NORMAL
+ HIGH
+}
+
+
