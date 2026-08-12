@@ -1,0 +1,27 @@
+.task-page{
+    background-color: #f5f7fb;
+    height: 100vh;
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+.task-container{
+    max-width: 850px;
+    background-color: #ffffff;
+    padding: 32px;
+    border-radius: 16px;
+}
+input{
+    width: 200px;
+    height: 20px;
+}
+p{
+    color: blueviolet;
+}
+.basic-tasks{
+    display: flex;
+}
+
+.setting-tasks{
+    display: flex;
+}
