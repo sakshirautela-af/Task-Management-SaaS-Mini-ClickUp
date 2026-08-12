@@ -1,25 +1,37 @@
 
-import { use } from "react";
 import * as userService from "../service/users.service.js";
 
+export const findUserByEmail = async (req, res, next) => {
+  try {
+    const email = req.params.email || req.body.email || req.query.email;
+    const password = req.body.password || req.query.password;
 
-export const findUserByEmail=async(req,res,next)=>{
-  try{
-    const {email,password}=req.body;
-    if(!email || !password){
+    if (!email || !password) {
       return res.status(400).json({
-        message: "Missing required fields: email, password, firstName, lastName, phone",
+        message: "Missing required field: email"
+      });
+    }
+    const user = await userService.getUserByEmail(email, password);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+    if(user.password !==password){
+      console.log(user.password , password);
+      return res.status(401).json({
+        message:"user is unauthorized",
       })
     }
-    const user=userService.getUserByEmail(email,password);
     res.status(200).json({
-      message:"User data retrived",
-      data:user
-    })
-  }catch(error){
-    next(error)
+      message: "User data retrieved successfully",
+      data: user
+    });
+  } catch (error) {
+    next(error);
   }
-}
+};
+
 export const createUser = async (req, res, next) => {
   try {
     const { email, password, firstName, lastName, phone } = req.body;

@@ -12,9 +12,10 @@ export const createUser = async (data) => {
   });
 };
 export const getUserByEmail=async(email,pass) => {
-  return await prisma.users.findUnique({
+  return await prisma.users.findFirst({
     where:{
-      email:email
+      email:email,
+      password:pass,
     }
   });
 }

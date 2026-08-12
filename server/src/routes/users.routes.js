@@ -4,16 +4,21 @@ import {
   getUser,
   getUserById,
   updateUser,
-  deleteUser
-  ,findUserByEmail
+  deleteUser,
+  findUserByEmail
 } from '../controllers/users.controller.js';
 
 const router = express.Router();
 
+router.get('/', getUser);
 router.get('/get', getUser);
+router.post('/', createUser);
 router.post('/create', createUser);
+router.post('/login', findUserByEmail);
+router.get('/byEmail/:email', findUserByEmail);
 router.get('/:id', getUserById);
+router.put('/:id', updateUser);
 router.put('/update/:id', updateUser);
 router.delete('/:id', deleteUser);
-router.get('/byEmail/:email',findUserByEmail)
+
 export default router;
