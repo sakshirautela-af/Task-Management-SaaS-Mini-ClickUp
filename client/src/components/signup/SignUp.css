@@ -1,0 +1,18 @@
+form{
+    display: grid;
+}
+.name{
+    width: 100px;
+}
+.user-name{
+    display: flex;
+}
+input{
+    width: 400px;
+}
+button{
+
+}
+.sign-up{
+    margin: 15%;
+}
