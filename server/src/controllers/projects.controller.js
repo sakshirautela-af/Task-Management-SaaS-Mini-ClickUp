@@ -1,7 +1,7 @@
 import * as projectService from "../service/projects.service.js";
 import * as userService from "../service/users.service.js";
 import { roles } from "../enum/Roles.js";
-import { use } from "react";
+
 export const findProjectByUser = async (req, res, next) => {
   try {
     const id = req.userId;
@@ -92,10 +92,10 @@ export const updateProject = async (req, res, next) => {
 export const deleteProject = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const res = await projectService.deleteProject(id);
+    const deletedProject = await projectService.deleteProject(id);
     res.status(200).json({
       message: "Project deleted successfully",
-      body: res,
+      body: deletedProject,
     });
   } catch (error) {
     next(error);
