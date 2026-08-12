@@ -7,14 +7,9 @@ export const createProject = async (data) => {
       description: data.description || "",
       startDate: data.startDate,
       createdBy: Number(data.userId),
-      //   creator:{
-      //     connect:{id:Numbe(data.userId)}
-      //   }
     },
     include: {
-      creator: {
-        connect: { id: Numbe(data.userId) },
-      },
+      creater: true,
     },
   });
 };
@@ -30,13 +25,13 @@ export const getAllProjects = async () => {
   });
 };
 
-export const getProjectByUser = async () => {
+export const getProjectByUser = async (id) => {
   return await prisma.projects.findMany({
     orderBy: {
       id: "desc",
     },
     where: {
-      id: Number(id),
+      createdBy: Number(id),
     },
   });
 };

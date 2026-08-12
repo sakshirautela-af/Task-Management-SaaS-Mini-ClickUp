@@ -33,7 +33,7 @@ export const getTaskById = async (id) => {
 };
 
 export const getTaskByUser = async (id) => {
-  return await prisma.tasks.findUnique({
+  return await prisma.tasks.findMany({
     where: {
       assignedTo: Number(id)
     }

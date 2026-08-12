@@ -2,9 +2,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+
 datasource db {
   provider = "mysql"
 }
+
 
 model Users {
   id        Int        @id @default(autoincrement())
@@ -12,38 +14,66 @@ model Users {
   password  String
   firstName String
   lastName  String
-  createAt  DateTime   @default(now())
-  updateAt  DateTime   @updatedAt
-  phone     String     @unique
-  projects  Projects[] @relation("ProjectsToUsers")
+  phone     String?    @unique
+  role Role     @default(USER)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  assignedTask Tasks[] @relation("AssignedTo")
+  createdTask Tasks[] @relation("AssignedBy")
+  createdProjects Projects[] @relation("createdBy")
+  updatedProjects Projects[] @relation("updatedBy")
 }
+
 
 model Projects {
   id          Int      @id @default(autoincrement())
   name        String   @unique
   description String
-  createAt    DateTime @default(now())
-  updateAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   timeline    DateTime
-  tasks       Tasks[]
-  users       Users[]  @relation("ProjectsToUsers")
+  status      Status
+  createdBy   Int
+  updatedBy   Int
+
+
+  creater Users @relation("createdBy",fields: [createdBy],references: [id])
+  updater Users @relation("updatedBy",fields: [updatedBy],references: [id])
+
+
+  tasks Tasks[]
+
+
+  @@index([createdBy])
+  @@index([updatedBy])
 }
+
 
 model Tasks {
   id          Int          @id @default(autoincrement())
-  name        String       @unique
+  name        String       
   description String
   time        DateTime     @default(now())
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   dueDate     DateTime
   priority    TaskPriority @default(NORMAL)
-  projectId   Int
   status      TaskStatus   @default(PENDING)
-  project     Projects     @relation(fields: [projectId], references: [id])
+  projectId   Int
+  assignedBy   Int?
+  assignedTo   Int?
 
-  @@index([projectId], map: "Tasks_projectId_fkey")
+
+  project     Projects     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee Users? @relation("AssignedTo",fields: [assignedTo],references: [id],onDelete: SetNull)
+  assigner Users? @relation("AssignedBy",fields: [assignedBy],references: [id],onDelete: SetNull)
+  @@index([projectId])
+  @@index([assignedTo])
+  @@index([assignedBy])
+
+
 }
+
 
 
 enum TaskStatus {
@@ -60,5 +90,19 @@ enum TaskPriority {
  NORMAL
  HIGH
 }
+enum Role{
+  ADMIN
+  SUPERADMIN
+  USER
+}
+enum Status {
+  TODO
+  INPROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+
+
 
 
