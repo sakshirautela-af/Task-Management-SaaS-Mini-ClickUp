@@ -4,8 +4,14 @@ import { roles } from "../enum/Roles.js";
 
 export const findProjectByUser = async (req, res, next) => {
   try {
-    const id = req.userId;
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: "Missing user ID" });
+    }
     const user = await userService.getUserByID(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     const projects = await projectService.getProjectByUser(id);
     res.status(200).json({
       message: "project data retrieved successfully",
@@ -18,18 +24,40 @@ export const findProjectByUser = async (req, res, next) => {
 
 export const createProject = async (req, res, next) => {
   try {
-    const userId = req.body.userId;
+    const body = req.body || {};
+    const userId = body.userId;
     const user = await userService.getUserByID(userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
     // if(user.role !==roles.ADMIN || user.role!==roles.SUPERADMIN){
     //   return res.status(403).json({
     //     message: "Access Denied to create project"
     //   })
     // }
-    const { name, description, startDate } = req.body;
+    const { name, description, startDate, assignId, updatedBy } = body;
     if (!name || !description) {
       return res.status(400).json({
         message: "Missing required field: name",
       });
+    }
+
+    if (assignId) {
+      const assignUser = await userService.getUserByID(assignId);
+      if (!assignUser) {
+        return res.status(404).json({ message: "Assignee user not found" });
+      }
+    }
+
+    if (updatedBy) {
+      const updateUser = await userService.getUserByID(updatedBy);
+      if (!updateUser) {
+        return res.status(404).json({ message: "Updater user not found" });
+      }
     }
 
     const project = await projectService.createProject({
@@ -37,6 +65,8 @@ export const createProject = async (req, res, next) => {
       description,
       startDate,
       userId,
+      assignId,
+      updatedBy
     });
 
     res.status(201).json({
@@ -79,7 +109,23 @@ export const getProjectById = async (req, res, next) => {
 export const updateProject = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const project = await projectService.updateProject(id, req.body);
+    const body = req.body || {};
+    
+    if (body.assignId) {
+      const assignUser = await userService.getUserByID(body.assignId);
+      if (!assignUser) {
+        return res.status(404).json({ message: "Assignee user not found" });
+      }
+    }
+
+    if (body.updatedBy) {
+      const updateUser = await userService.getUserByID(body.updatedBy);
+      if (!updateUser) {
+        return res.status(404).json({ message: "Updater user not found" });
+      }
+    }
+
+    const project = await projectService.updateProject(id, body);
     res.status(200).json({
       message: "Project updated successfully",
       data: project,
@@ -96,6 +142,19 @@ export const deleteProject = async (req, res, next) => {
     res.status(200).json({
       message: "Project deleted successfully",
       body: deletedProject,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getDashboardStats = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const stats = await projectService.getDashboardStats(userId);
+    res.status(200).json({
+      message: "Dashboard stats retrieved successfully",
+      data: stats,
     });
   } catch (error) {
     next(error);

@@ -1,27 +1,102 @@
-.task-page{
-    background-color: #f5f7fb;
-    height: 100vh;
-    padding: 40px;
-    box-sizing: border-box;
+/* Base Task Page styles */
+.task-page {
+    /* Keep these if needed by other parts, but mostly obsolete now */
 }
 
-.task-container{
-    max-width: 850px;
-    background-color: #ffffff;
-    padding: 32px;
-    border-radius: 16px;
-}
-input{
-    width: 200px;
-    height: 20px;
-}
-p{
-    color: blueviolet;
-}
-.basic-tasks{
-    display: flex;
+/* Inline Tasks Container inside Project */
+.inline-tasks-container {
+    padding: 1.5rem;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    margin-top: 1rem;
+    border: 1px solid #e2e8f0;
 }
 
-.setting-tasks{
+.tasks-header {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 0.5rem;
+}
+
+.inline-task-form {
     display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.small-input {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.9rem !important;
+    flex: 1;
+    min-width: 120px;
+}
+
+.small-btn {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+    margin-top: 0 !important;
+    width: auto !important;
+}
+
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.inline-task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.task-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.task-info strong {
+    color: #0f172a;
+    font-size: 0.95rem;
+}
+
+.task-info span {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-top: 0.2rem;
+}
+
+.task-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.tiny-select {
+    padding: 0.35rem 0.5rem !important;
+    font-size: 0.8rem !important;
+}
+
+.delete-btn {
+    background-color: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.delete-btn:hover {
+    background-color: #fee2e2;
 }

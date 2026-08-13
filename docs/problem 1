@@ -1,0 +1,87 @@
+✔ Generated Prisma Client (v7.9.1) to ./node_modules/@prisma/client in 53ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+
+user@sakshirautela server % npx prisma db push --force-reset
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma.
+Datasource "db": MySQL database "miniclickup" at "127.0.0.1:3310"
+
+The MySQL database "miniclickup" at "127.0.0.1:3310" was successfully reset.
+
+🚀  Your database is now in sync with your Prisma schema. Done in 143ms
+
+user@sakshirautela server % clear
+user@sakshirautela server % npm run dev
+
+> task-manager-server@1.0.0 dev
+> nodemon src/index.js
+
+[nodemon] 3.1.14
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: js,mjs,cjs,json
+[nodemon] starting `node src/index.js`
+Server running on port 5001
+Unhandled error: PrismaClientKnownRequestError: 
+Invalid `prisma.users.findMany()` invocation:
+
+
+Database error. Code: `45028`. Message: `pool timeout: failed to retrieve a connection from pool after 10000ms
+    (pool connections: active=0 idle=0 limit=10)`
+    at Jr.handleRequestError (/Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/client/runtime/client.js:65:8286)
+    at Jr.handleAndLogRequestError (/Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/client/runtime/client.js:65:7581)
+    at Jr.request (/Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/client/runtime/client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (/Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/client/runtime/client.js:99:6862)
+    at async Module.getAllUsers (file:///Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/src/service/users.service.js:23:10)
+    at async getUser (file:///Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/src/controllers/users.controller.js:63:19) {
+  code: 'P2039',
+  meta: {
+    modelName: 'Users',
+    driverAdapterError: DriverAdapterError: pool timeout: failed to retrieve a connection from pool after 10000ms
+        (pool connections: active=0 idle=0 limit=10)
+        at PrismaMariaDbAdapter.onError (file:///Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/adapter-mariadb/dist/index.mjs:320:11)
+        at PrismaMariaDbAdapter.performIO (file:///Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/adapter-mariadb/dist/index.mjs:315:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaMariaDbAdapter.queryRaw (file:///Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/adapter-mariadb/dist/index.mjs:280:20)
+        at async e.interpretNode (/Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/client/runtime/client.js:11:44895)
+        at async e.interpretNode (/Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/client/runtime/client.js:11:46559)
+        at async e.run (/Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/client/runtime/client.js:11:43609)
+        at async e.execute (/Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/client/runtime/client.js:57:815)
+        at async Ut.request (/Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/client/runtime/client.js:58:2421)
+        at async Object.singleLoader (/Users/user/Desktop/appfoster-ase-training/task-management-saas-mini-clickup/server/node_modules/@prisma/client/runtime/client.js:65:6569) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.9.1'
+}
+
+
+sol import { PrismaClient } from '@prisma/client'
+import { PrismaMariaDb } from '@prisma/adapter-mariadb'
+import mariadb from 'mariadb'
+
+// 1. Create the connection pool with necessary security fallbacks
+const pool = mariadb.createPool({
+  host: '127.0.0.1',
+  port: 3310,
+  user: process.env.DB_USER,      // Your database username
+  password: process.env.DB_PASSWORD,  // Your database password
+  database: 'miniclickup',
+  
+  // CRITICAL FIXES FOR LOCAL MARIADB/MYSQL POOL TIMEOUTS:
+  allowPublicKeyRetrieval: true,
+  ssl: false, // Set to true if your local server strictly demands SSL
+  
+  connectionLimit: 10
+})
+
+// 2. Instantiate the adapter
+const adapter = new PrismaMariaDb(pool)
+
+// 3. Pass it to the client
+export const prisma = new PrismaClient({ adapter })

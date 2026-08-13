@@ -1,0 +1,8 @@
+Date:
+Phase/Feature:
+Prompt used:
+AI response summary (2-3 lines):
+What I accepted as-is:
+What I modified and why:
+What I learned:
+Bug introduced by AI (if any) and how I fixed it:

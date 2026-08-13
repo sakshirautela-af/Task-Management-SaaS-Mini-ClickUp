@@ -1,0 +1,18 @@
+Fix Email Service & Expand Dashboard Logic
+This implementation plan addresses two key requests: fixing the email/OTP service and expanding the dashboard statistics on the backend.
+
+Proposed Changes
+1. Fix Email Service & Registration Flow
+Currently, the application silently returns true when the Brevo API key is not present, hiding the OTP from you during local development. Also, the OTP verification logic in the registration service was commented out, meaning anyone could register without validating their email.
+
+server/src/config/emailconfig.js: Add a local development fallback that prints the OTP to the console so you can copy and paste it into the UI during testing.
+server/src/service/users.service.js: Uncomment and restore the OTP validation in registerUser to ensure the security flow works correctly.
+2. Expand Dashboard Options in the Backend
+Currently, the backend dashboard stats (getDashboardStats) only counts projects and tasks where the user is explicitly the Assignee. We need to expand this to also include projects where the user is the Creator, ensuring they see all their data in the dashboard.
+
+server/src/service/projects.service.js: Update the getDashboardStats Prisma queries to use an OR condition, fetching projects/tasks where the user is either the assignId OR the createdBy.
+Open Questions
+Do you also want me to wire up the "Forgot Password" UI flow on the frontend as part of the email service fixes, or is fixing the backend OTP logic sufficient for now?
+Verification Plan
+Trigger a signup OTP and verify that the 4-digit code is logged in the backend terminal.
+Ensure the dashboard API GET /api/projects/stats/:userId correctly aggregates total projects and tasks for both created and assigned entities.

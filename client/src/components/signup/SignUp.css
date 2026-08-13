@@ -1,21 +1,15 @@
-form {
-  display: grid;
+/* Import shared auth styling from SignIn.css */
+@import '../login/SignIn.css';
+
+.auth-card.signup-card {
+    max-width: 500px;
 }
 
-.name {
-  width: 100px;
+.name-group {
+    display: flex;
+    gap: 1rem;
 }
 
-.user-name {
-  display: flex;
-}
-
-input {
-  width: 400px;
-}
-
-button {}
-
-.sign-up {
-  margin: 15%;
+.name-group .auth-input {
+    flex: 1;
 }

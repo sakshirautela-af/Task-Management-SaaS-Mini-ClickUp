@@ -1,32 +1,40 @@
-
 import * as userService from "../service/users.service.js";
 
 export const findUserByEmail = async (req, res, next) => {
   try {
-    const email = req.params.email || req.body.email || req.query.email;
-    const password = req.body.password || req.query.password;
-
+    const { email, password } = req.body || {};
     if (!email || !password) {
-      return res.status(400).json({
-        message: "Missing required field: email"
-      });
+      return res.status(400).json({ message: "Missing required fields: email, password" });
     }
-    const user = await userService.getUserByEmail(email, password);
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found"
-      });
+
+    const result = await userService.authenticateUser(email, password);
+    if (result.error) {
+      return res.status(result.status).json({ message: result.error });
     }
-    if(user.password !==password){
-      console.log(user.password , password);
-      return res.status(401).json({
-        message:"user is unauthorized",
-      })
-    }
+
     res.status(200).json({
-      message: "User data retrieved successfully",
-      data: user
+      message: "User authenticated successfully",
+      data: result.user,
+      token: result.token
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sendSignupOtp = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const result = await userService.initiateSignup(email);
+    if (result.error) {
+      return res.status(result.status || 400).json({ message: result.error });
+    }
+
+    res.status(200).json({ message: "OTP sent successfully to your email" });
   } catch (error) {
     next(error);
   }
@@ -34,30 +42,68 @@ export const findUserByEmail = async (req, res, next) => {
 
 export const createUser = async (req, res, next) => {
   try {
-    const { email, password, firstName, lastName, phone } = req.body;
-    if (!email || !password || !firstName || !lastName || !phone) {
+    const { email, password, firstName, lastName, otp } = req.body || {};
+    if (!email || !password || !firstName || !lastName || !otp) {
       return res.status(400).json({
-        message: "Missing required fields: email, password, firstName, lastName, phone"
+        message: "Missing required fields: email, password, firstName, lastName, otp"
       });
     }
 
-    const user = await userService.createUser({
+    const result = await userService.registerUser({
       email,
       password,
       firstName,
       lastName,
-      phone
-    });
+    }, otp);
+
+    if (result.error) {
+      return res.status(result.status || 400).json({ message: result.error });
+    }
 
     res.status(201).json({
-      message: "User created successfully",
-      data: user
+      message: "User created and verified successfully.",
+      data: result.user
     });
   } catch (error) {
     next(error);
   }
 };
 
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email is required" });
+
+    const result = await userService.processForgotPassword(email);
+    if (result.error) {
+      return res.status(result.status).json({ message: result.error });
+    }
+
+    res.status(200).json({ message: "OTP sent successfully to your email" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: "Email, OTP, and newPassword are required" });
+    }
+
+    const result = await userService.processResetPassword(email, otp, newPassword);
+    if (result.error) {
+      return res.status(result.status).json({ message: result.error });
+    }
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Original basic CRUD operations
 export const getUser = async (req, res, next) => {
   try {
     const users = await userService.getUser();
@@ -89,7 +135,8 @@ export const getUserById = async (req, res, next) => {
 export const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const user = await userService.updateUser(id, req.body);
+    const body = req.body || {};
+    const user = await userService.updateUser(id, body);
     res.status(200).json({
       message: "User updated successfully",
       data: user
@@ -110,4 +157,3 @@ export const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
-

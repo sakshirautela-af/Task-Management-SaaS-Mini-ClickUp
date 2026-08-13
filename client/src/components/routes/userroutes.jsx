@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Signup from "../signup/SignUp";
 import Signin from "../login/SignIn"
-import Home from "../home"
+import Home from "../home/home"
 export default function UserRoutes() {
   return (<></>);
   // <BrowserRouter>

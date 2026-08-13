@@ -5,20 +5,26 @@ import {
     getProject,
     getProjectById,
     updateProject,
-    deleteProject
+    deleteProject,
+    getDashboardStats
 } from '../controllers/projects.controller.js';
+import { authMiddleware } from '../middleware/auth.middleware.js';
 
 const projectroutes = express.Router();
+
+projectroutes.use(authMiddleware);
+
+projectroutes.get('/stats/:userId', getDashboardStats);
 
 projectroutes.get('/get', getProject);
 
 projectroutes.post('/create', createProject);
 
-projectroutes.get('/role/:role', findProjectByUser);
+projectroutes.get('/user/:id', findProjectByUser);
 
 projectroutes.get('/get/:id', getProjectById);
 
-projectroutes.put('/update/:id', updateProject);
+projectroutes.patch('/update/:id', updateProject);
 
 projectroutes.delete('/delete/:id', deleteProject);
 

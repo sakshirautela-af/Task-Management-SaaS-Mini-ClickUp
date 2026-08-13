@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../navbar/navbar";
 import Sidebar from "../sidebar/Sidebar";
 import "./home.css";
-import { getAllProject } from "../api/projectApi";
+import { getAllProject, getDashboardStats } from "../api/projectApi";
 import { getAllTasks } from "../api/tasksApi";
 import { Link } from "react-router-dom";
 
@@ -10,16 +10,42 @@ export default function Home() {
   const [active, setActive] = useState("home");
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    totalTasks: 0,
+    completedTasks: 0,
+    pendingTasks: 0,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
+        const storedUserStr = localStorage.getItem("user");
+        let currentUserId = null;
+        if (storedUserStr) {
+          try {
+            const userObj = JSON.parse(storedUserStr);
+            if (userObj && userObj.id) {
+              currentUserId = userObj.id;
+            }
+          } catch (e) {}
+        }
+
+        if (!currentUserId) {
+          setLoading(false);
+          return; // Alternatively, handle redirect to login
+        }
+
         const projectsData = await getAllProject();
         const tasksData = await getAllTasks();
-        setProjects(projectsData || []);
-        setTasks(tasksData || []);
+        const statsData = await getDashboardStats(currentUserId);
+        setProjects(projectsData.data || []);
+        setTasks(tasksData.data || []);
+        if (statsData && statsData.data) {
+          setStats(statsData.data);
+        }
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {
@@ -30,6 +56,10 @@ export default function Home() {
     fetchDashboardData();
   }, []);
 
+  const { totalProjects, totalTasks, completedTasks, pendingTasks } = stats;
+
+  const recentProjects = projects.slice(0, 5);
+  const upcomingTasks = tasks.slice(0, 5);
 
   return (
     <div className="container">
@@ -50,19 +80,19 @@ export default function Home() {
               <section className="summary-cards">
                 <div className="card stat-card primary">
                   <h3>Total Projects</h3>
-                  {/* <div className="stat-value">{totalProjects}</div> */}
+                  <div className="stat-value">{totalProjects}</div>
                 </div>
                 <div className="card stat-card secondary">
                   <h3>Total Tasks</h3>
-                  {/* <div className="stat-value">{totalTasks}</div> */}
+                  <div className="stat-value">{totalTasks}</div>
                 </div>
                 <div className="card stat-card success">
                   <h3>Completed Tasks</h3>
-                  {/* <div className="stat-value">{completedTasks}</div> */}
+                  <div className="stat-value">{completedTasks}</div>
                 </div>
                 <div className="card stat-card warning">
                   <h3>Pending Tasks</h3>
-                  {/* <div className="stat-value">{pendingTasks}</div> */}
+                  <div className="stat-value">{pendingTasks}</div>
                 </div>
               </section>
 
@@ -73,7 +103,7 @@ export default function Home() {
                     <h2>Recent Projects</h2>
                     <Link to="/projects" className="view-all-link">View All</Link>
                   </div>
-                  {/* {recentProjects.length > 0 ? (
+                  {recentProjects.length > 0 ? (
                     <ul className="item-list">
                       {recentProjects.map((project, index) => (
                         <li key={index} className="list-item">
@@ -89,14 +119,14 @@ export default function Home() {
                     </ul>
                   ) : (
                     <p className="empty-state">No projects found. Create one to get started!</p>
-                  )} */}
+                  )}
                 </section>
 
                 {/* Upcoming Tasks */}
-                {/* <section className="card list-section">
+                <section className="card list-section">
                   <div className="section-header">
                     <h2>Upcoming Tasks</h2>
-                    <Link to="/tasks" className="view-all-link">View All</Link>
+                    <Link to="/projects" className="view-all-link">View Projects</Link>
                   </div>
                   {upcomingTasks.length > 0 ? (
                     <ul className="item-list">
@@ -109,7 +139,7 @@ export default function Home() {
                             </span>
                           </div>
                           <div className="item-action">
-                            <span className="badge badge-warning">Pending</span>
+                            <span className="badge badge-warning">{task.status}</span>
                           </div>
                         </li>
                       ))}
@@ -117,7 +147,7 @@ export default function Home() {
                   ) : (
                     <p className="empty-state">No pending tasks. You're all caught up!</p>
                   )}
-                </section> */}
+                </section>
               </div>
             </div>
           )}

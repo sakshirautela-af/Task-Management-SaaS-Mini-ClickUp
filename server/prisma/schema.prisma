@@ -2,107 +2,111 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 datasource db {
   provider = "mysql"
+  url      = env("DATABASE_URL")
 }
-
 
 model Users {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique
-  password  String
-  firstName String
-  lastName  String
-  phone     String?    @unique
-  role Role     @default(USER)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  assignedTask Tasks[] @relation("AssignedTo")
-  createdTask Tasks[] @relation("AssignedBy")
-  createdProjects Projects[] @relation("createdBy")
-  updatedProjects Projects[] @relation("updatedBy")
+  id               Int        @id @default(autoincrement())
+  email            String     @unique
+  password         String
+  firstName        String
+  lastName         String
+  phone            String?    @unique
+  role             Role       @default(USER)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  assignedTask     Tasks[]    @relation("AssignedTo")
+  createdTask      Tasks[]    @relation("AssignedBy")
+  createdProjects  Projects[] @relation("createdBy")
+  updatedProjects  Projects[] @relation("updatedBy")
+  assignedProjects Projects[] @relation("assignId")
+  isActive         Boolean?   @default(true)
+  otp              String?
+  otpExpiry        DateTime?
+  isVerified       Boolean    @default(false)
 }
 
+model SignupOtps {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  otp       String
+  otpExpiry DateTime
+}
 
 model Projects {
   id          Int      @id @default(autoincrement())
   name        String   @unique
   description String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  timeline    DateTime
-  status      Status
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  startDate   DateTime
+  endDate     DateTime?
+  status      Status   @default(TODO)
   createdBy   Int
-  updatedBy   Int
+  updatedBy   Int?
+  assignId    Int?
 
-
-  creater Users @relation("createdBy",fields: [createdBy],references: [id])
-  updater Users @relation("updatedBy",fields: [updatedBy],references: [id])
-
+  creator  Users  @relation("createdBy", fields: [createdBy], references: [id])
+  updater  Users? @relation("updatedBy", fields: [updatedBy], references: [id])
+  assignTo Users? @relation("assignId", fields: [assignId], references: [id])
 
   tasks Tasks[]
 
+  isActive Boolean? @default(true)
 
   @@index([createdBy])
   @@index([updatedBy])
 }
 
-
 model Tasks {
   id          Int          @id @default(autoincrement())
-  name        String       
+  name        String
   description String
   time        DateTime     @default(now())
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  dueDate     DateTime
+  startDate   DateTime
+  endDate     DateTime
   priority    TaskPriority @default(NORMAL)
   status      TaskStatus   @default(PENDING)
   projectId   Int
-  assignedBy   Int?
-  assignedTo   Int?
+  assignedBy  Int?
+  assignedTo  Int?
 
+  project  Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee Users?   @relation("AssignedTo", fields: [assignedTo], references: [id], onDelete: SetNull)
+  assigner Users?   @relation("AssignedBy", fields: [assignedBy], references: [id], onDelete: SetNull)
 
-  project     Projects     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignee Users? @relation("AssignedTo",fields: [assignedTo],references: [id],onDelete: SetNull)
-  assigner Users? @relation("AssignedBy",fields: [assignedBy],references: [id],onDelete: SetNull)
   @@index([projectId])
   @@index([assignedTo])
   @@index([assignedBy])
-
-
 }
-
-
 
 enum TaskStatus {
- PENDING
- COMPLETED
- FAILED
- INPROGRESS
- CANCELLED
+  PENDING
+  COMPLETED
+  FAILED
+  INPROGRESS
+  CANCELLED
 }
-
 
 enum TaskPriority {
- LOW
- NORMAL
- HIGH
+  LOW
+  NORMAL
+  HIGH
 }
-enum Role{
+
+enum Role {
   ADMIN
   SUPERADMIN
   USER
 }
+
 enum Status {
   TODO
   INPROGRESS
   COMPLETED
   CANCELLED
 }
-
-
-
-
-

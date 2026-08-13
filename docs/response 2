@@ -1,0 +1,17 @@
+import { PrismaClient } from '@prisma/client';
+import { PrismaMariaDB } from '@prisma/adapter-mariadb';
+import mariadb from 'mariadb';
+
+// Create a connection pool pointing to your MySQL instance (port 3310)
+const pool = mariadb.createPool({
+  host: '127.0.0.1',
+  port: 3310,
+  user: 'root',
+  password: 'yourpassword', // Update to your actual password
+  database: 'miniclickup'
+});
+
+const adapter = new PrismaMariaDB(pool);
+const prisma = new PrismaClient({ adapter });
+
+export default prisma;
