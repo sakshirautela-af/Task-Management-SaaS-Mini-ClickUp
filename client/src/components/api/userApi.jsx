@@ -22,7 +22,30 @@ export const createUserDetails = async (userDetails) => {
   return { ok: response.ok, data }
 }
 export const sendMail = async (email) => {
-  const response = await fetch(`${api}/users/signup-otp`, {
+  const response = await fetch(`${api}/util/signup-otp`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email })
+  })
+  const data = await response.json()
+  return { ok: response.ok, data }
+}
+
+export const resetUserPassword = async (userDetails) => {
+  const response = await fetch(`${api}/users/reset-password`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(userDetails)
+  })
+  const data = await response.json()
+  return { ok: response.ok, data }
+}
+export const sendForgetPassMail = async (email) => {
+  const response = await fetch(`${api}/util/forgetpass-otp`, {
     method: 'POST',
     headers: {
       "Content-Type": "application/json"

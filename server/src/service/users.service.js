@@ -2,18 +2,20 @@ import { prisma } from "../config/prisma.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { generateOtp } from "./other.service.js";
-import { sendOtpEmail } from "../config/emailconfig.js";
 
 export const createUser = async (data) => {
   const hashedPassword = await bcrypt.hash(data.password, 10);
-  return await prisma.users.create({
+  const user= await prisma.users.create({
     data: {
       email: data.email,
       password: hashedPassword,
       firstName: data.firstName,
       lastName: data.lastName,
+      isVerified:true
     }
   });
+  delete user.password;
+  return user;
 };
 export const getUserByEmail = async (email) => {
   return await prisma.users.findFirst({
@@ -40,7 +42,7 @@ export const getUserByID = async (id) => {
 export const updateUser = async (id, data) => {
   const updateData = {};
   if (data.email !== undefined) updateData.email = data.email;
-  if (data.password !== undefined) updateData.password = data.password;
+  if (data.password !== undefined) updateData.password = await bcrypt.hash(data.password);
   if (data.firstName !== undefined) updateData.firstName = data.firstName;
   if (data.lastName !== undefined) updateData.lastName = data.lastName;
   if (data.phone !== undefined) updateData.phone = data.phone;
@@ -63,34 +65,7 @@ export const deleteUserByID = async (id) => {
   });
 };
 
-export const saveUserOtp = async (id, otp, otpExpiry) => {
-  return await prisma.users.update({
-    where: { id: Number(id) },
-    data: { otp, otpExpiry }
-  });
-};
 
-export const clearUserOtp = async (id) => {
-  return await prisma.users.update({
-    where: { id: Number(id) },
-    data: { otp: null, otpExpiry: null }
-  });
-};
-
-export const verifyUserEmail = async (id) => {
-  return await prisma.users.update({
-    where: { id: Number(id) },
-    data: { isVerified: true }
-  });
-};
-
-export const updateUserPassword = async (id, newPassword) => {
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  return await prisma.users.update({
-    where: { id: Number(id) },
-    data: { password: hashedPassword }
-  });
-};
 
 export const getProjectsByUser = async (id) => {
   return await prisma.projects.findMany({
@@ -100,36 +75,35 @@ export const getProjectsByUser = async (id) => {
   });
 };
 
-export const initiateSignup = async (email) => {
-  const existingUser = await getUserByEmail(email);
-  if (existingUser) {
-    return { error: "Email is already registered", status: 409 };
-  }
+export const getForgetPassOtp=async(email)=>{
+  const a= await prisma.forgetpassOtp.findFirst({
+    where:{
+      email:email
+    }
+  })
+  return a;
+}
+export const getSignupOtp=async(email)=>{
+  const a= await prisma.signupOtp.findFirst({
+    where:{
+      email:email
+    }
+  })
+  return a;
+}
+export const  processResetPassword=async(email,newPassword)=>{
+    const a=await prisma.users.update({
+      where:{
+        email:email
+      },
+      data:{
+        password:await bcrypt.hash(newPassword,10)
+      }
+    })
+    delete a.password
+    return a;
+}
 
-  const otp = generateOtp().toString();
-  const otpExpiry = new Date(Date.now() + 15 * 60 * 1000);
-
-  await prisma.signupOtps.upsert({
-    where: { email },
-    update: { otp, otpExpiry },
-    create: { email, otp, otpExpiry }
-  });
-
-  const emailSent = await sendOtpEmail(email, otp);
-  if (!emailSent) {
-    return { error: "Failed to send OTP email", status: 500 };
-  }
-
-  return { success: true };
-};
-
-export const registerUser = async (data, otp) => {
-
-
-  const user = await createUser(data);
-  delete user.password;
-  return { user };
-};
 
 export const authenticateUser = async (email, password) => {
   const user = await getUserByEmail(email);
@@ -146,29 +120,4 @@ export const authenticateUser = async (email, password) => {
 
   delete user.password;
   return { user, token };
-};
-
-export const processForgotPassword = async (email) => {
-  const user = await getUserByEmail(email);
-  if (!user) return { error: "User not found", status: 404 };
-
-  const otp = generateOtp().toString();
-  const otpExpiry = new Date(Date.now() + 15 * 60 * 1000);
-
-  await saveUserOtp(user.id, otp, otpExpiry);
-  const emailSent = await sendOtpEmail(email, otp);
-  if (!emailSent) return { error: "Failed to send OTP email", status: 500 };
-
-  return { success: true };
-};
-
-export const processResetPassword = async (email, otp, newPassword) => {
-  const user = await getUserByEmail(email);
-  if (!user) return { error: "User not found", status: 404 };
-  if (!user.otp || user.otp !== otp) return { error: "Invalid OTP", status: 400 };
-  if (new Date() > new Date(user.otpExpiry)) return { error: "OTP has expired", status: 400 };
-
-  await updateUserPassword(user.id, newPassword);
-  await clearUserOtp(user.id);
-  return { success: true };
 };
