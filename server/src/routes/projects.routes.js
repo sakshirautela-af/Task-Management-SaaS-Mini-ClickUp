@@ -6,7 +6,8 @@ import {
     getProjectById,
     updateProject,
     deleteProject,
-    getDashboardStats
+    getDashboardStats,
+    
 } from '../controllers/projects.controller.js';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 

@@ -55,7 +55,6 @@ export default function Projects() {
             } catch (e) { }
         }
 
-        // Check if a normal user is trying to create or edit a project
         // if (currentUserRole === 'USER') {
         //     alert("Access Denied: You do not have permission to perform this action.");
         //     return;

@@ -23,7 +23,6 @@ export const createTask = async (req, res, next) => {
         return res.status(404).json({ message: "Assignee user not found" });
       }
     }
-
     const task = await taskService.createTask({
       name,
       description,
@@ -44,7 +43,24 @@ export const createTask = async (req, res, next) => {
     next(error);
   }
 };
-
+export const getPaginationData= async(req,res,next)=>{
+  try{
+    const page=req.params.page;
+    const limit=req.params.limit;
+    if(!page || !limit){
+      return res.status(401).json({
+        message:"field is missing"
+      })
+    }
+    const response= await taskService.getPaginationData(page,limit);
+    res.status(200).json({
+      message:"loaded data",
+      data:response
+    })
+  }catch(error){
+    next(error);
+  }
+}
 export const getTasks = async (req, res, next) => {
   try {
     const { projectId } = req.query;
@@ -57,10 +73,22 @@ export const getTasks = async (req, res, next) => {
     next(error);
   }
 };
+export const getTasksByProject = async (req, res, next) => {
+  try {
+    const projectId  = req.params.id;
+    const tasks = await taskService.getAllTaskbyProjectId(projectId);
+    res.status(200).json({
+      message: "Tasks retrieved successfully",
+      data: tasks
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const filterTasks = async (req, res, next) => {
   try {
-    const { projectId, search, priority, status } = req.query;
+    const { projectId, search, priority, status } = req.query || {};
     const tasks = await taskService.filterTasks(projectId, search, priority, status);
     res.status(200).json({
       message: "Filtered tasks retrieved successfully",

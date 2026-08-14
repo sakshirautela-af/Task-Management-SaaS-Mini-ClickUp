@@ -14,8 +14,21 @@ export default function Signup() {
     const [errorMsg, setErrorMsg] = useState("");
     const [otpSent, setOtpSent] = useState(false)
     const [otp, setOtp] = useState("")
-    useEffect(() => {
-    }, [email, firstName, lastName, password, repassword])
+    const sendEmail=async()=>{
+        console.log(email)
+        try {
+             //verify email first
+            const email_res = await sendMail(email)
+            if (!email_res.ok) {
+                setErrorMsg(email_res.data?.message || "Failed to send OTP")
+                return;
+            }
+            setOtpSent(true);
+        }catch(error){
+            setErrorMsg("An error occurred during sending mail.");
+
+        }
+    }
     const handleSignUp = async (e) => {
         e.preventDefault();
         if (!firstName || !lastName || !email || !password || !repassword) {
@@ -26,15 +39,13 @@ export default function Signup() {
             setErrorMsg("Passwords do not match.");
             return;
         }
+        if(!otpSent){
+            setErrorMsg("Verify First");
+            return;
+        }
         const newUser = { firstName, lastName, email, password, otp }
         try {
-            //verify email first
-            const email_res = await sendMail(email)
-            if (!email_res.ok) {
-                setErrorMsg(email_res.data?.message || "Failed to send OTP")
-                return;
-            }
-            setOtpSent(true);
+           
             const res = await createUserDetails(newUser)
             if (!res.ok) {
                 setErrorMsg(res.data?.message || "Failed to create account")
@@ -57,7 +68,7 @@ export default function Signup() {
                         <input className="auth-input" placeholder="First Name" onChange={(e) => setFirstName(e.target.value)} />
                         <input className="auth-input" placeholder="Last Name" onChange={(e) => setLastName(e.target.value)} />
                     </div>
-                    <input className="auth-input" type="email" placeholder="Email Address" onChange={(e) => setEmail(e.target.value)} />
+                    <input className="auth-input" type="email" placeholder="Email Address" onChange={(e) => setEmail(e.target.value)} /> <button onClick={sendEmail} type="button">Verify</button>
                     <input className="auth-input" type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
                     <input className="auth-input" type="password" placeholder="Confirm Password" onChange={(e) => setRepassword(e.target.value)} />
 

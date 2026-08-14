@@ -1,5 +1,5 @@
 import * as userService from "../service/users.service.js";
-
+import * as otherService from "../service/other.service.js"
 export const findUserByEmail = async (req, res, next) => {
   try {
     const { email, password } = req.body || {};
@@ -22,24 +22,6 @@ export const findUserByEmail = async (req, res, next) => {
   }
 };
 
-export const sendSignupOtp = async (req, res, next) => {
-  try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
-
-    const result = await userService.initiateSignup(email);
-    if (result.error) {
-      return res.status(result.status || 400).json({ message: result.error });
-    }
-
-    res.status(200).json({ message: "OTP sent successfully to your email" });
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const createUser = async (req, res, next) => {
   try {
     const { email, password, firstName, lastName, otp } = req.body || {};
@@ -48,13 +30,17 @@ export const createUser = async (req, res, next) => {
         message: "Missing required fields: email, password, firstName, lastName, otp"
       });
     }
-
-    const result = await userService.registerUser({
-      email,
+    const validotp=await userService.getSignupOtp(email);
+    if(!validotp || validotp.otp!=otp){
+      return res.status(401).json({
+        message :"invalid otp"
+      })
+    }
+    const result = await userService.createUser(
+      {email,
       password,
       firstName,
-      lastName,
-    }, otp);
+      lastName});
 
     if (result.error) {
       return res.status(result.status || 400).json({ message: result.error });
@@ -69,34 +55,25 @@ export const createUser = async (req, res, next) => {
   }
 };
 
-export const forgotPassword = async (req, res, next) => {
-  try {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ message: "Email is required" });
-
-    const result = await userService.processForgotPassword(email);
-    if (result.error) {
-      return res.status(result.status).json({ message: result.error });
-    }
-
-    res.status(200).json({ message: "OTP sent successfully to your email" });
-  } catch (error) {
-    next(error);
-  }
-};
 
 export const resetPassword = async (req, res, next) => {
   try {
-    const { email, otp, newPassword } = req.body;
-    if (!email || !otp || !newPassword) {
+    const { email, otp, password } = req.body;
+    if (!email || !otp || !password) {
       return res.status(400).json({ message: "Email, OTP, and newPassword are required" });
     }
-
-    const result = await userService.processResetPassword(email, otp, newPassword);
-    if (result.error) {
-      return res.status(result.status).json({ message: result.error });
+    const validotp=await userService.getForgetPassOtp(email);
+    if(!validotp ){
+      return res.status(401).json({
+        message :"invalid otp"
+      })
     }
-
+    if(validotp.otp!==otp){
+ return res.status(401).json({
+        message :"invalid otp"
+      })
+    }
+    const result = await userService.processResetPassword(email, password);
     res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
     next(error);

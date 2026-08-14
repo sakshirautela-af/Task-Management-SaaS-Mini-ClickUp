@@ -15,6 +15,9 @@ export const createTask = async (data) => {
       projectId: Number(data.projectId),
       assignedBy: data.assignedBy ? Number(data.assignedBy) : undefined,
       assignedTo: data.assignedTo ? Number(data.assignedTo) : undefined,
+    },
+    include:{
+      project:true
     }
   });
 };
@@ -45,20 +48,39 @@ export const getAllTasks = async (filters = {}) => {
   });
 };
 
-export const filterTasks = async (projectId, search, priority, status) => {
+export const filterTasks = async (projectId, search, priority, status)=>{
   const where = {};
   if (projectId) where.projectId = Number(projectId);
   if (search) where.name = { contains: search };
   if (priority) where.priority = priority;
   if (status) where.status = status;
-
+  
   return await prisma.tasks.findMany({
     where,
     orderBy: {
       id: "desc"
     }
   });
-};
+}
+export const getAllTaskbyProjectId=async(projectId)=>{
+    const r=await prisma.tasks.findMany({
+      where:{
+        projectId:Number(projectId)
+      },
+    })
+    return r
+
+}
+
+
+export const getPaginationData=async(page,limit)=>{
+  const offset=(page-1)*limit;
+  const res= await prisma.tasks.findMany({
+      skip:offset,
+      take:Number(limit)
+    });
+    return res;
+}
 
 export const getTaskById = async (id) => {
   return await prisma.tasks.findUnique({

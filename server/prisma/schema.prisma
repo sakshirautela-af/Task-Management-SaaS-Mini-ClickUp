@@ -27,14 +27,19 @@ model Users {
   otpExpiry        DateTime?
   isVerified       Boolean    @default(false)
 }
-
-model SignupOtps {
+model SignupOtp {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   otp       String
   otpExpiry DateTime
 }
 
+model ForgetpassOtp {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  otp       String
+  otpExpiry DateTime
+}
 model Projects {
   id          Int      @id @default(autoincrement())
   name        String   @unique
