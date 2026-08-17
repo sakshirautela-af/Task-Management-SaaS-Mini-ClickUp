@@ -23,7 +23,7 @@ export const getAllProject = async () => {
 export const getDashboardStats = async (userId) => {
   const response = await fetch(`${api}/projects/stats/${userId}`, {
     method: 'GET',
-    headers: getAuthHeaders()
+    // headers: getAuthHeaders()
   });
   return await response.json();
 };
@@ -41,6 +41,22 @@ export const updateProject = async (id, projectData) => {
     method: 'PATCH',
     headers: getAuthHeaders(),
     body: JSON.stringify(projectData)
+  });
+  return await response.json();
+};
+
+export const findProjectByUser = async (userId) => {
+  const response = await fetch(`${api}/projects/user/${userId}`, {
+    method: 'GET',
+    headers: getAuthHeaders()
+  });
+  return await response.json();
+};
+
+export const getProjectById = async (id) => {
+  const response = await fetch(`${api}/projects/get/${id}`, {
+    method: 'GET',
+    headers: getAuthHeaders()
   });
   return await response.json();
 };

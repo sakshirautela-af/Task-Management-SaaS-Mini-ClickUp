@@ -1,102 +1,92 @@
-/* Base Task Page styles */
-.task-page {
-    /* Keep these if needed by other parts, but mostly obsolete now */
+/* We import Projects.css classes but define any specific task classes here */
+/* In many setups Projects.css is global, but let's define our full styling here just in case */
+
+/* =========================
+   TASK FILTERS
+========================= */
+.task-filters-section {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 
-/* Inline Tasks Container inside Project */
-.inline-tasks-container {
-    padding: 1.5rem;
-    background-color: #f8fafc;
-    border-radius: 12px;
-    margin-top: 1rem;
-    border: 1px solid #e2e8f0;
+.filter-input,
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
 }
 
-.tasks-header {
-    font-size: 1.1rem;
-    color: #1e293b;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #cbd5e1;
-    padding-bottom: 0.5rem;
+.filter-input {
+  flex-grow: 1;
 }
 
-.inline-task-form {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
+.filter-input:focus,
+.filter-select:focus {
+  border-color: var(--accent-primary);
 }
 
-.small-input {
-    padding: 0.5rem 0.75rem !important;
-    font-size: 0.9rem !important;
-    flex: 1;
-    min-width: 120px;
+/* =========================
+   TASK STATUS BADGES
+========================= */
+.task-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.small-btn {
-    padding: 0.5rem 1rem !important;
-    font-size: 0.9rem !important;
-    margin-top: 0 !important;
-    width: auto !important;
+.status-pending {
+  background-color: var(--bg-hover);
+  color: var(--text-secondary);
 }
 
-.tasks-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+.status-inprogress {
+  background-color: var(--badge-blue-bg);
+  color: var(--accent-primary);
 }
 
-.inline-task-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+.status-completed {
+  background-color: var(--badge-green-bg);
+  color: var(--badge-green-text);
 }
 
-.task-info {
-    display: flex;
-    flex-direction: column;
+/* =========================
+   TASK PRIORITY BADGES
+========================= */
+.task-priority {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.task-info strong {
-    color: #0f172a;
-    font-size: 0.95rem;
+.priority-low {
+  background-color: var(--badge-green-bg);
+  color: var(--badge-green-text);
 }
 
-.task-info span {
-    color: #64748b;
-    font-size: 0.85rem;
-    margin-top: 0.2rem;
+.priority-normal {
+  background-color: var(--badge-blue-bg);
+  color: var(--badge-blue-text);
 }
 
-.task-actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.tiny-select {
-    padding: 0.35rem 0.5rem !important;
-    font-size: 0.8rem !important;
-}
-
-.delete-btn {
-    background-color: #fef2f2;
-    color: #ef4444;
-    border: 1px solid #fecaca;
-    padding: 0.35rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.delete-btn:hover {
-    background-color: #fee2e2;
+.priority-high {
+  background-color: var(--badge-red-bg);
+  color: var(--badge-red-text);
 }

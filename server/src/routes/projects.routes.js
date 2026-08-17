@@ -13,7 +13,7 @@ import { authMiddleware } from '../middleware/auth.middleware.js';
 
 const projectroutes = express.Router();
 
-projectroutes.use(authMiddleware);
+// projectroutes.use(authMiddleware);
 
 projectroutes.get('/stats/:userId', getDashboardStats);
 

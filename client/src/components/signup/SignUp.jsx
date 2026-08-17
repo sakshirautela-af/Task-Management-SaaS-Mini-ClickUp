@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import { createUserDetails, sendMail } from '../api/userApi'
+import { createUserDetails } from '../api/userApi'
+import { sendMail } from '../api/othersApi'
 import "./SignUp.css"
 import { useNavigate } from "react-router-dom"
 import SignIn from "../login/SignIn";
@@ -68,7 +69,9 @@ export default function Signup() {
                         <input className="auth-input" placeholder="First Name" onChange={(e) => setFirstName(e.target.value)} />
                         <input className="auth-input" placeholder="Last Name" onChange={(e) => setLastName(e.target.value)} />
                     </div>
-                    <input className="auth-input" type="email" placeholder="Email Address" onChange={(e) => setEmail(e.target.value)} /> <button onClick={sendEmail} type="button">Verify</button>
+                    <div className="verify-email">
+                    <input className="auth-input" type="email" placeholder="Email Address" onChange={(e) => setEmail(e.target.value)} /> 
+                    {email && <button className="verify-btn" onClick={sendEmail} type="button">Verify</button>}</div>
                     <input className="auth-input" type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
                     <input className="auth-input" type="password" placeholder="Confirm Password" onChange={(e) => setRepassword(e.target.value)} />
 

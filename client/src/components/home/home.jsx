@@ -1,158 +1,199 @@
 import { useEffect, useState } from "react";
-import Navbar from "../navbar/navbar";
-import Sidebar from "../sidebar/Sidebar";
 import "./home.css";
-import { getAllProject, getDashboardStats } from "../api/projectApi";
-import { getAllTasks } from "../api/tasksApi";
-import { Link } from "react-router-dom";
+import { getDashboardStats } from "../api/projectApi";
 
 export default function Home() {
-  const [active, setActive] = useState("home");
-  const [projects, setProjects] = useState([]);
-  const [tasks, setTasks] = useState([]);
   const [stats, setStats] = useState({
     totalProjects: 0,
     totalTasks: 0,
     completedTasks: 0,
     pendingTasks: 0,
   });
+
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const fetchStats = async () => {
       try {
         setLoading(true);
-        const storedUserStr = localStorage.getItem("user");
-        let currentUserId = null;
-        if (storedUserStr) {
-          try {
-            const userObj = JSON.parse(storedUserStr);
-            if (userObj && userObj.id) {
-              currentUserId = userObj.id;
-            }
-          } catch (e) {}
-        }
+        setError(null);
 
-        if (!currentUserId) {
-          setLoading(false);
-          return; // Alternatively, handle redirect to login
-        }
+        const response = await getDashboardStats(2);
 
-        const projectsData = await getAllProject();
-        const tasksData = await getAllTasks();
-        const statsData = await getDashboardStats(currentUserId);
-        setProjects(projectsData.data || []);
-        setTasks(tasksData.data || []);
-        if (statsData && statsData.data) {
-          setStats(statsData.data);
-        }
+        console.log("Dashboard response:", response);
+
+        setStats(response.data);
+
       } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
+        console.error(
+          "Failed to fetch dashboard stats:",
+          error
+        );
+
+        setError(
+          error?.response?.data?.message ||
+          "Failed to load dashboard statistics."
+        );
+
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDashboardData();
+    fetchStats();
   }, []);
 
-  const { totalProjects, totalTasks, completedTasks, pendingTasks } = stats;
-
-  const recentProjects = projects.slice(0, 5);
-  const upcomingTasks = tasks.slice(0, 5);
-
   return (
-    <div className="container">
-      <Navbar />
-      <div className="home-div">
-        <Sidebar />
-        <div className="dashboard-main">
-          <header className="dashboard-header">
-            <h1>Dashboard Overview</h1>
-            <p>Welcome back! Here's what's happening with your projects today.</p>
-          </header>
+    <div className="dashboard-page">
 
-          {loading ? (
-            <div className="loading-spinner">Loading dashboard data...</div>
-          ) : (
-            <div className="dashboard-content">
-              {/* Summary Cards */}
-              <section className="summary-cards">
-                <div className="card stat-card primary">
-                  <h3>Total Projects</h3>
-                  <div className="stat-value">{totalProjects}</div>
-                </div>
-                <div className="card stat-card secondary">
-                  <h3>Total Tasks</h3>
-                  <div className="stat-value">{totalTasks}</div>
-                </div>
-                <div className="card stat-card success">
-                  <h3>Completed Tasks</h3>
-                  <div className="stat-value">{completedTasks}</div>
-                </div>
-                <div className="card stat-card warning">
-                  <h3>Pending Tasks</h3>
-                  <div className="stat-value">{pendingTasks}</div>
-                </div>
-              </section>
+      <div className="page-header">
+        <div>
+          <h1>Dashboard Overview</h1>
 
-              <div className="dashboard-grid">
-                {/* Recent Projects */}
-                <section className="card list-section">
-                  <div className="section-header">
-                    <h2>Recent Projects</h2>
-                    <Link to="/projects" className="view-all-link">View All</Link>
-                  </div>
-                  {recentProjects.length > 0 ? (
-                    <ul className="item-list">
-                      {recentProjects.map((project, index) => (
-                        <li key={index} className="list-item">
-                          <div className="item-details">
-                            <h4>{project.name || project.title || 'Untitled Project'}</h4>
-                            <span className="item-meta">{project.description || 'No description'}</span>
-                          </div>
-                          <div className="item-action">
-                            <span className="badge badge-primary">Active</span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="empty-state">No projects found. Create one to get started!</p>
-                  )}
-                </section>
-
-                {/* Upcoming Tasks */}
-                <section className="card list-section">
-                  <div className="section-header">
-                    <h2>Upcoming Tasks</h2>
-                    <Link to="/projects" className="view-all-link">View Projects</Link>
-                  </div>
-                  {upcomingTasks.length > 0 ? (
-                    <ul className="item-list">
-                      {upcomingTasks.map((task, index) => (
-                        <li key={index} className="list-item">
-                          <div className="item-details">
-                            <h4>{ task.name }</h4>
-                            <span className="item-meta">
-                              {task.priority && `Priority: ${task.priority}`}
-                            </span>
-                          </div>
-                          <div className="item-action">
-                            <span className="badge badge-warning">{task.status}</span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="empty-state">No pending tasks. You're all caught up!</p>
-                  )}
-                </section>
-              </div>
-            </div>
-          )}
+          <p>
+            Welcome back! Here's what's happening
+            with your projects today.
+          </p>
         </div>
       </div>
+
+
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
+
+      {loading ? (
+
+        <div className="loading">
+          Loading dashboard...
+        </div>
+
+      ) : (
+
+        <>
+
+
+          <div className="summary-cards">
+
+
+            <div className="stat-card">
+
+              <div className="stat-card-top">
+
+                <div className="stat-icon project-icon">
+                  📁
+                </div>
+
+                <span className="stat-label">
+                  Projects
+                </span>
+
+              </div>
+
+              <h2>
+                {stats.totalProjects}
+              </h2>
+
+              <p>
+                Total projects
+              </p>
+
+            </div>
+
+
+            {/* Total Tasks */}
+
+            <div className="stat-card">
+
+              <div className="stat-card-top">
+
+                <div className="stat-icon task-icon">
+                  ✓
+                </div>
+
+                <span className="stat-label">
+                  Tasks
+                </span>
+
+              </div>
+
+              <h2>
+                {stats.totalTasks}
+              </h2>
+
+              <p>
+                Total tasks
+              </p>
+
+            </div>
+
+
+            {/* Completed Tasks */}
+
+            <div className="stat-card">
+
+              <div className="stat-card-top">
+
+                <div className="stat-icon completed-icon">
+                  ✓
+                </div>
+
+                <span className="stat-label">
+                  Completed
+                </span>
+
+              </div>
+
+              <h2>
+                {stats.completedTasks}
+              </h2>
+
+              <p>
+                Tasks completed
+              </p>
+
+            </div>
+
+
+            {/* Pending Tasks */}
+
+            <div className="stat-card">
+
+              <div className="stat-card-top">
+
+                <div className="stat-icon pending-icon">
+                  !
+                </div>
+
+                <span className="stat-label">
+                  Pending
+                </span>
+
+              </div>
+
+              <h2>
+                {stats.pendingTasks}
+              </h2>
+
+              <p>
+                Tasks remaining
+              </p>
+
+            </div>
+
+          </div>
+
+
+
+
+        </>
+
+      )}
+
     </div>
   );
 }

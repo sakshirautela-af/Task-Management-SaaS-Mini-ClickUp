@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { resetUserPassword,sendForgetPassMail } from '../api/userApi'
+import { resetUserPassword } from '../api/userApi'
+import { sendForgetPassMail } from '../api/othersApi'
 import { useNavigate } from "react-router-dom"
 import "./Forgetpass.css"
 export default function Forgetpass() {
@@ -88,6 +89,7 @@ export default function Forgetpass() {
                        <button className="auth-btn" onClick={()=>setNewPassword(email,otp,password,repassword)}>Set Password</button></div>
                     }
                 <a href="/signup" className="auth-link">Don't have an account? <span>Sign Up</span></a>
+                <a href="/signin" className="auth-link">Already have an account? <span>Sign In</span></a>
             </div>
         </div>
     );

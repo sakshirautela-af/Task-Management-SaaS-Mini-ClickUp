@@ -21,16 +21,13 @@ export const createUserDetails = async (userDetails) => {
   const data = await response.json()
   return { ok: response.ok, data }
 }
-export const sendMail = async (email) => {
-  const response = await fetch(`${api}/util/signup-otp`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email })
+export const getUserByEmail = async (email) => {
+  const response = await fetch(`${api}/users/byEmail/${email}`, {
+    method: 'GET',
+    headers: getAuthHeaders()
   })
-  const data = await response.json()
-  return { ok: response.ok, data }
+  const user = await response.json()
+  return user
 }
 
 export const resetUserPassword = async (userDetails) => {
@@ -44,13 +41,38 @@ export const resetUserPassword = async (userDetails) => {
   const data = await response.json()
   return { ok: response.ok, data }
 }
-export const sendForgetPassMail = async (email) => {
-  const response = await fetch(`${api}/util/forgetpass-otp`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email })
+export const getAllUsers = async () => {
+  const response = await fetch(`${api}/users/get`, {
+    method: 'GET',
+    headers: getAuthHeaders()
+  })
+  const users = await response.json()
+  return users
+}
+
+export const updateUser = async (id, userData) => {
+  const response = await fetch(`${api}/users/update/${id}`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(userData)
+  })
+  const data = await response.json()
+  return { ok: response.ok, data }
+}
+
+export const deleteUser = async (id) => {
+  const response = await fetch(`${api}/users/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  })
+  const data = await response.json()
+  return { ok: response.ok, data }
+}
+
+export const verifyAuth = async () => {
+  const response = await fetch(`${api}/users/auth`, {
+    method: 'GET',
+    headers: getAuthHeaders()
   })
   const data = await response.json()
   return { ok: response.ok, data }

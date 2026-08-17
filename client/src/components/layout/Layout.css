@@ -1,0 +1,45 @@
+.app-layout {
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+/* Navbar */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 64px;
+
+  z-index: 1000;
+}
+
+
+/* Sidebar */
+
+.sidebar {
+  position: fixed;
+
+  top: 64px;
+  left: 0;
+
+  width: 240px;
+  height: calc(100vh - 64px);
+
+  overflow-y: auto;
+
+  z-index: 900;
+}
+
+
+/* Main page content */
+
+.main-content {
+  margin-left: 240px;
+
+  padding-top: 64px;
+
+  min-height: 100vh;
+}

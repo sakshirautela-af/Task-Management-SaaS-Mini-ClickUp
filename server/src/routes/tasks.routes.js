@@ -6,6 +6,7 @@ import {
   updateTask,
   deleteTask,
   filterTasks,
+  filterTasksByUser,
   getPaginationData
   ,getTasksByProject
 } from '../controllers/tasks.controller.js';
@@ -13,12 +14,12 @@ import { authMiddleware } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
-router.use(authMiddleware);
-
+//router.use(authMiddleware);
 router.get('/get', getTasks);
 router.get('/byproject/:id', getTasksByProject);
 
 router.get('/filter', filterTasks);
+router.get('/filterByUser', filterTasksByUser);
 
 router.post('/create', createTask);
 

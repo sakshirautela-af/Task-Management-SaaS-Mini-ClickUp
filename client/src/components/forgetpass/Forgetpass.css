@@ -24,7 +24,7 @@
 }                     
 
 .auth-card h2 {
-    color: #0f172a;
+    color: var(--text-primary);
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 2rem;
@@ -43,16 +43,16 @@
     border: 1px solid #cbd5e1;
     border-radius: 12px;
     font-size: 1rem;
-    color: #334155;
-    background-color: #f8fafc;
+    color: var(--text-primary);
+    background-color: var(--bg-tertiary);
     transition: all 0.2s ease;
     box-sizing: border-box;
     outline: none;
 }
 
 .auth-input:focus {
-    border-color: #3b82f6;
-    background-color: #ffffff;
+    border-color: var(--accent-primary);
+    background-color: var(--bg-secondary);
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
 }
 
@@ -79,12 +79,12 @@
 .auth-link {
     margin-top: 1.5rem;
     display: block;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     text-decoration: none;
 }
 
 .auth-link span {
-    color: #3b82f6;
+    color: var(--accent-primary);
     font-weight: 600;
 }

@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { getAllTasks, deleteTasks, filterTasks } from "../api/tasksApi";
+import {
+  getAllTasks,
+  deleteTasks,
+  filterTasks,
+  filterTasksByUser,
+} from "../api/tasksApi";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,10 +32,14 @@ export default function Tasks({ projectId }) {
     try {
       setLoading(true);
       setError(null);
-      const response = await filterTasks(projectId, {
+      const userStr = localStorage.getItem("user");
+      const user = userStr ? JSON.parse(userStr) : null;
+      const userId = user?.id;
+
+      const response = await filterTasksByUser(userId, projectId, {
         search: searchQuery,
         priority: filterPriority,
-        status: filterStatus
+        status: filterStatus,
       });
       setTasks(response.data || []);
     } catch (err) {
@@ -43,11 +52,9 @@ export default function Tasks({ projectId }) {
 
   useEffect(() => {
     fetchTasks();
-    // eslint-disable-next-line
   }, [projectId, searchQuery, filterPriority, filterStatus]);
 
   const handleCreateTask = () => {
-    // Navigate to create task, pass projectId if it exists so we can pre-select it
     navigate("/create-task", { state: { projectId } });
   };
 
@@ -71,7 +78,7 @@ export default function Tasks({ projectId }) {
 
   const handleDelete = async (task) => {
     const confirmDelete = window.confirm(
-      `Are you sure you want to delete "${task.name}"?`
+      `Are you sure you want to delete "${task.name}"?`,
     );
 
     if (!confirmDelete) {
@@ -191,12 +198,16 @@ export default function Tasks({ projectId }) {
                           </div>
                         </td>
                         <td>
-                          <span className={`task-priority priority-${task.priority.toLowerCase()}`}>
+                          <span
+                            className={`task-priority priority-${task.priority.toLowerCase()}`}
+                          >
                             {task.priority}
                           </span>
                         </td>
                         <td>
-                          <span className={`task-status status-${task.status.toLowerCase()}`}>
+                          <span
+                            className={`task-status status-${task.status.toLowerCase()}`}
+                          >
                             {task.status}
                           </span>
                         </td>
@@ -207,8 +218,8 @@ export default function Tasks({ projectId }) {
                         </td>
                         <td>
                           {task.description
-                            ? task.description.length > 30 
-                              ? task.description.substring(0, 30) + '...' 
+                            ? task.description.length > 30
+                              ? task.description.substring(0, 30) + "..."
                               : task.description
                             : "No description"}
                         </td>
