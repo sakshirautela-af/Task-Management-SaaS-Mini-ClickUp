@@ -63,7 +63,7 @@ export default function SignIn() {
                     <button className="auth-btn" type="submit">Sign In</button>
                 </form>
                 <a href="/signup" className="auth-link">Don't have an account? <span>Sign Up</span></a>
-                <a href="/forgetpass" className="auth-link">Don't have an account? <span>forget password</span></a>
+                <a href="/forgetpass" className="auth-link">Don't remember password? <span>forget password</span></a>
             </div>
         </div>
     );

@@ -3,10 +3,20 @@ import * as userService from "../service/users.service.js";
 
 export const createTask = async (req, res, next) => {
   try {
-    const { name, description, startDate, endDate, priority, status, projectId, assignedBy, assignedTo } = req.body || {};
+    const {
+      name,
+      description,
+      startDate,
+      endDate,
+      priority,
+      status,
+      projectId,
+      assignedBy,
+      assignedTo,
+    } = req.body || {};
     if (!name || !projectId) {
       return res.status(400).json({
-        message: "Missing required fields: name and projectId"
+        message: "Missing required fields: name and projectId",
       });
     }
 
@@ -32,42 +42,42 @@ export const createTask = async (req, res, next) => {
       status,
       projectId,
       assignedBy,
-      assignedTo
+      assignedTo,
     });
 
     res.status(201).json({
       message: "Task created successfully",
-      data: task
+      data: task,
     });
   } catch (error) {
     next(error);
   }
 };
-export const getPaginationData= async(req,res,next)=>{
-  try{
-    const page=req.params.page;
-    const limit=req.params.limit;
-    if(!page || !limit){
+export const getPaginationData = async (req, res, next) => {
+  try {
+    const page = req.params.page;
+    const limit = req.params.limit;
+    if (!page || !limit) {
       return res.status(401).json({
-        message:"field is missing"
-      })
+        message: "field is missing",
+      });
     }
-    const response= await taskService.getPaginationData(page,limit);
+    const response = await taskService.getPaginationData(page, limit);
     res.status(200).json({
-      message:"loaded data",
-      data:response
-    })
-  }catch(error){
+      message: "loaded data",
+      data: response,
+    });
+  } catch (error) {
     next(error);
   }
-}
+};
 export const getTasks = async (req, res, next) => {
   try {
     const { projectId } = req.query;
     const tasks = await taskService.getAllTasks({ projectId });
     res.status(200).json({
       message: "Tasks retrieved successfully",
-      data: tasks
+      data: tasks,
     });
   } catch (error) {
     next(error);
@@ -75,11 +85,11 @@ export const getTasks = async (req, res, next) => {
 };
 export const getTasksByProject = async (req, res, next) => {
   try {
-    const projectId  = req.params.id;
+    const projectId = req.params.id;
     const tasks = await taskService.getAllTaskbyProjectId(projectId);
     res.status(200).json({
       message: "Tasks retrieved successfully",
-      data: tasks
+      data: tasks,
     });
   } catch (error) {
     next(error);
@@ -89,10 +99,33 @@ export const getTasksByProject = async (req, res, next) => {
 export const filterTasks = async (req, res, next) => {
   try {
     const { projectId, search, priority, status } = req.query || {};
-    const tasks = await taskService.filterTasks(projectId, search, priority, status);
+    const tasks = await taskService.filterTasks(
+      projectId,
+      search,
+      priority,
+      status,
+    );
     res.status(200).json({
       message: "Filtered tasks retrieved successfully",
-      data: tasks
+      data: tasks,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const filterTasksByUser = async (req, res, next) => {
+  try {
+    const { userId, projectId, search, priority, status } = req.query || {};
+    const tasks = await taskService.filterTasksByUser(
+      userId,
+      projectId,
+      search,
+      priority,
+      status,
+    );
+    res.status(200).json({
+      message: "Filtered tasks retrieved successfully",
+      data: tasks,
     });
   } catch (error) {
     next(error);
@@ -108,25 +141,28 @@ export const getTaskById = async (req, res, next) => {
     }
     res.status(200).json({
       message: "Task retrieved successfully",
-      data: task
+      data: task,
     });
   } catch (error) {
     next(error);
   }
 };
 
-
 export const getTaskByUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { search, priority, status } = req.query;
-    const task = await taskService.getTaskByUser(id, { search, priority, status });
+    const task = await taskService.getTaskByUser(id, {
+      search,
+      priority,
+      status,
+    });
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
     res.status(200).json({
       message: "Task retrieved successfully",
-      data: task
+      data: task,
     });
   } catch (error) {
     next(error);
@@ -155,7 +191,7 @@ export const updateTask = async (req, res, next) => {
     const task = await taskService.updateTask(id, body);
     res.status(200).json({
       message: "Task updated successfully",
-      data: task
+      data: task,
     });
   } catch (error) {
     next(error);
@@ -167,12 +203,9 @@ export const deleteTask = async (req, res, next) => {
     const { id } = req.params;
     await taskService.deleteTask(id);
     res.status(200).json({
-      message: "Task deleted successfully"
+      message: "Task deleted successfully",
     });
   } catch (error) {
     next(error);
   }
 };
-
-
-

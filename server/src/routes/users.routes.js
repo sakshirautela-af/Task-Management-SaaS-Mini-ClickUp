@@ -8,24 +8,20 @@ import {
   resetPassword,
   findUserByEmail,
 } from '../controllers/users.controller.js';
-
-import { authMiddleware } from '../middleware/auth.middleware.js';
+import {authMiddleware} from "../middleware/auth.middleware.js"
 
 const router = express.Router();
-
+router.get('/auth',authMiddleware)
 router.post('/create', createUser);
 router.post('/login', findUserByEmail);
-router.get('/byEmail/:email', findUserByEmail);
 router.post('/reset-password', resetPassword);
 
-// Protected routes
-router.use(authMiddleware);
+//router.use(authMiddleware);
 
-router.get('/', getUser);
+router.get('/byEmail/:email', findUserByEmail);
 router.get('/get', getUser);
 router.get('/:id', getUserById);
-router.put('/:id', updateUser);
-router.put('/update/:id', updateUser);
+router.patch('/update/:id', updateUser);
 router.delete('/:id', deleteUser);
 
 export default router;
