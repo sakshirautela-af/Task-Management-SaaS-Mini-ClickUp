@@ -9,21 +9,65 @@ import {
   faTasks,
   faCheckCircle,
   faClock,
+  faFile,
+  faTrash,
+  faUpload,
 } from "@fortawesome/free-solid-svg-icons";
+import { getFilesByProject, uploadFile, deleteFile } from "../api/fileApi";
 import "./ProjectView.css";
 
 export default function ProjectView() {
   const location = useLocation();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     if (location.state && location.state.project) {
       setProject(location.state.project);
+      fetchFiles(location.state.project.id);
     } else {
       navigate("/projects");
     }
   }, [location, navigate]);
+
+  const fetchFiles = async (projectId) => {
+    try {
+      const res = await getFilesByProject(projectId);
+      if (res && res.body) {
+        setFiles(res.body);
+      }
+    } catch (error) {
+      console.error("Error fetching files:", error);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleUploadFile = async () => {
+    if (!selectedFile || !project) return;
+    try {
+      await uploadFile(project.id, selectedFile);
+      setSelectedFile(null);
+      fetchFiles(project.id);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+
+  const handleDeleteFile = async (fileId) => {
+    try {
+      await deleteFile(fileId);
+      fetchFiles(project.id);
+    } catch (error) {
+      console.error("Error deleting file:", error);
+    }
+  };
 
   if (!project) {
     return <div className="project-view-loading">Loading project...</div>;
@@ -67,7 +111,6 @@ export default function ProjectView() {
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="project-view-content">
           <div className="project-view-header">
             <div className="title-section">
@@ -82,7 +125,6 @@ export default function ProjectView() {
           </div>
 
           <div className="project-view-body">
-            {/* Left Column: Description & Details */}
             <div className="main-details">
               <div className="detail-card description-card">
                 <h2>About this Project</h2>
@@ -130,7 +172,6 @@ export default function ProjectView() {
               </div>
             </div>
 
-            {/* Right Column: Stats & Progress */}
             <div className="side-details">
               <div className="detail-card stats-card">
                 <h2>At a Glance</h2>
@@ -172,6 +213,45 @@ export default function ProjectView() {
                       <span className="stat-label">Current State</span>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <div className="detail-card files-card">
+                <h2>Project Files</h2>
+                
+                <div className="file-upload-section">
+                  <input type="file" onChange={handleFileChange} className="file-input" />
+                  <button 
+                    onClick={handleUploadFile} 
+                    disabled={!selectedFile}
+                    className="file-upload-btn"
+                  >
+                    <FontAwesomeIcon icon={faUpload} /> Upload
+                  </button>
+                </div>
+
+                <div className="files-list">
+                  {files.length === 0 ? (
+                    <p className="no-files-text">No files uploaded yet.</p>
+                  ) : (
+                    files.map((file) => (
+                      <div key={file.id} className="file-item">
+                        <div className="file-info">
+                          <FontAwesomeIcon icon={faFile} className="file-icon" />
+                          <a href={file.downloadUrl} target="_blank" rel="noopener noreferrer" className="file-link">
+                            {file.location || `File #${file.id}`}
+                          </a>
+                        </div>
+                        <button 
+                          onClick={() => handleDeleteFile(file.id)}
+                          className="file-delete-btn"
+                          title="Delete file"
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>

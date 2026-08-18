@@ -6,12 +6,10 @@ import "./CreateTask.css";
 export default function CreateTask() {
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // task could be passed if we are in edit mode
+
   const taskToEdit = location.state?.task;
   const isEditMode = Boolean(taskToEdit);
-  
-  // projectId could be passed if we came from a specific project page
+
   const defaultProjectId = location.state?.projectId || "";
 
   const [formData, setFormData] = useState({
@@ -106,7 +104,7 @@ export default function CreateTask() {
     <div className="create-task-page">
       <div className="create-task-container">
         
-        {/* Header Actions */}
+        {}
         <div className="task-form-actions-header">
           <button className="back-link" onClick={() => navigate(-1)}>
             &larr; Back

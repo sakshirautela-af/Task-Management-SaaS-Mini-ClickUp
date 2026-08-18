@@ -20,7 +20,7 @@ export default function TaskView() {
     if (location.state && location.state.task) {
       setTask(location.state.task);
     } else {
-      // If no task in state, go back
+      
       navigate(-1);
     }
   }, [location, navigate]);
@@ -57,7 +57,7 @@ export default function TaskView() {
     <div className="task-view-page">
       <div className="task-view-container">
         
-        {/* Header Actions */}
+        {}
         <div className="task-view-actions">
           <button className="back-btn" onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faArrowLeft} /> Back
@@ -72,7 +72,7 @@ export default function TaskView() {
           </div>
         </div>
 
-        {/* Main Content */}
+        {}
         <div className="task-view-content">
           
           <div className="task-view-header">
@@ -89,7 +89,7 @@ export default function TaskView() {
 
           <div className="task-view-body">
             
-            {/* Left Column: Description & Details */}
+            {}
             <div className="main-details">
               <div className="detail-card description-card">
                 <h2>About this Task</h2>
@@ -126,7 +126,7 @@ export default function TaskView() {
               </div>
             </div>
 
-            {/* Right Column: Stats & Progress */}
+            {}
             <div className="side-details">
               
               <div className="detail-card stats-card">

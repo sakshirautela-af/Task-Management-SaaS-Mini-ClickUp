@@ -23,7 +23,7 @@ export const getAllProject = async () => {
 export const getDashboardStats = async (userId) => {
   const response = await fetch(`${api}/projects/stats/${userId}`, {
     method: 'GET',
-    // headers: getAuthHeaders()
+    
   });
   return await response.json();
 };

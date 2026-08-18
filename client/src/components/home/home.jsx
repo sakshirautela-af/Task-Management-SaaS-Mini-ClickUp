@@ -58,13 +58,11 @@ export default function Home() {
         </div>
       </div>
 
-
       {error && (
         <div className="error-message">
           {error}
         </div>
       )}
-
 
       {loading ? (
 
@@ -76,9 +74,7 @@ export default function Home() {
 
         <>
 
-
           <div className="summary-cards">
-
 
             <div className="stat-card">
 
@@ -104,8 +100,7 @@ export default function Home() {
 
             </div>
 
-
-            {/* Total Tasks */}
+            {}
 
             <div className="stat-card">
 
@@ -131,8 +126,7 @@ export default function Home() {
 
             </div>
 
-
-            {/* Completed Tasks */}
+            {}
 
             <div className="stat-card">
 
@@ -158,8 +152,7 @@ export default function Home() {
 
             </div>
 
-
-            {/* Pending Tasks */}
+            {}
 
             <div className="stat-card">
 
@@ -186,9 +179,6 @@ export default function Home() {
             </div>
 
           </div>
-
-
-
 
         </>
 

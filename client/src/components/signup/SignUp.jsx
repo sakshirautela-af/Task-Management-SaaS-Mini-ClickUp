@@ -53,7 +53,7 @@ export default function Signup() {
                 return;
             }
             alert(res.data?.message || "Signup successful!");
-            // navigate('/signin')
+            
         } catch (error) {
             console.error(error);
             setErrorMsg("An error occurred during signup.");
