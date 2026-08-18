@@ -16,7 +16,6 @@ export default function Tasks({ projectId }) {
   const [error, setError] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
 
-  // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPriority, setFilterPriority] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -102,7 +101,7 @@ export default function Tasks({ projectId }) {
           </div>
         </div>
 
-        {/* Filters Section */}
+        {}
         <div className="task-filters-section">
           <input
             className="premium-input small-input filter-input"

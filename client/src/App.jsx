@@ -13,6 +13,7 @@ import TaskView from "./components/tasks/TaskView.jsx";
 import Calender from "./components/calender/Calender.jsx";
 import MyTasks from "./components/tasks/MyTasks.jsx";
 import Updateuser from "./components/users/Users.jsx";
+import FileUpload from "./components/files/FileUpload.jsx";
 function App() {
   return (
     <BrowserRouter>
@@ -32,6 +33,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgetpass" element={<ForgetPassword />} />
+        <Route path="/fileupload" element={<FileUpload />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,9 +1,4 @@
-/* We import Projects.css classes but define any specific task classes here */
-/* In many setups Projects.css is global, but let's define our full styling here just in case */
 
-/* =========================
-   TASK FILTERS
-========================= */
 .task-filters-section {
   display: flex;
   gap: 15px;
@@ -33,9 +28,6 @@
   border-color: var(--accent-primary);
 }
 
-/* =========================
-   TASK STATUS BADGES
-========================= */
 .task-status {
   display: inline-flex;
   align-items: center;
@@ -63,9 +55,6 @@
   color: var(--badge-green-text);
 }
 
-/* =========================
-   TASK PRIORITY BADGES
-========================= */
 .task-priority {
   display: inline-flex;
   align-items: center;

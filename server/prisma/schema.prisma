@@ -26,7 +26,9 @@ model Users {
   otp              String?
   otpExpiry        DateTime?
   isVerified       Boolean    @default(false)
+  image            String?
 }
+
 model SignupOtp {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -40,15 +42,16 @@ model ForgetpassOtp {
   otp       String
   otpExpiry DateTime
 }
+
 model Projects {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
   description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   startDate   DateTime
   endDate     DateTime?
-  status      Status   @default(TODO)
+  status      Status    @default(TODO)
   createdBy   Int
   updatedBy   Int?
   assignId    Int?
@@ -60,9 +63,17 @@ model Projects {
   tasks Tasks[]
 
   isActive Boolean? @default(true)
+  files    Files[]
 
   @@index([createdBy])
   @@index([updatedBy])
+}
+
+model Files {
+  id         Int       @id @default(autoincrement())
+  location       String @unique
+  projects   Projects? @relation(fields: [projectsId], references: [id])
+  projectsId Int?
 }
 
 model Tasks {

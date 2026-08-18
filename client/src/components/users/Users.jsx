@@ -30,7 +30,7 @@ export default function UsersUpdate() {
             setRole(res.data.role || "USER");
             setIsActive(res.data.isActive !== false);
           } else if (res) {
-            // Depending on the backend response structure
+            
             setFirstName(res.firstName || "");
             setLastName(res.lastName || "");
             setPhone(res.phone || "");
