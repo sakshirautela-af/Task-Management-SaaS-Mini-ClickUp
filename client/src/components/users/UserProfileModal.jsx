@@ -101,6 +101,11 @@ export default function UserProfileModal({
             Close
           </button>
         </div>
+        <div className="profile-modal-actions-footer">
+          <button className="btn-profile-close-full" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   );
