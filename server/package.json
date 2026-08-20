@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm install",
     "start": "node index.js",
-    "dev": "nodemon src/index.js",
+    "dev": "nodemon index.js",
     "db:migrate": "npx prisma migrate dev",
     "db:studio": "npx prisma studio",
     "test": "echo \"Error: no test specified\" && exit 1"
