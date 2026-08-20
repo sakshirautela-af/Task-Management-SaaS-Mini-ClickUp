@@ -45,7 +45,9 @@ export default function Signup() {
         return;
       }
       setOtpSent(true);
-      setSuccessMsg("Verification OTP has been sent to your email.");
+      setSuccessMsg(
+        "Verification OTP has been sent to your email. (please check spam folder also incase not found)",
+      );
     } catch (error) {
       console.error(error);
       setErrorMsg("An error occurred while sending OTP.");
@@ -148,7 +150,10 @@ export default function Signup() {
             <label className="auth-label">Work Email</label>
             <div className="auth-verify-row">
               <div className="auth-input-wrapper">
-                <FontAwesomeIcon icon={faEnvelope} className="auth-field-icon" />
+                <FontAwesomeIcon
+                  icon={faEnvelope}
+                  className="auth-field-icon"
+                />
                 <input
                   className="auth-input"
                   type="email"
@@ -224,7 +229,9 @@ export default function Signup() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 tabIndex={-1}
               >
-                <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+                <FontAwesomeIcon
+                  icon={showConfirmPassword ? faEyeSlash : faEye}
+                />
               </button>
             </div>
           </div>

@@ -39,7 +39,9 @@ export default function Forgetpass() {
       const res = await sendForgetPassMail(email.trim());
       if (res.ok) {
         setSentOtp(true);
-        setSuccessMsg("Verification OTP has been sent to your email.");
+        setSuccessMsg(
+          "Verification OTP has been sent to your email. (please check spam folder also incase not found)",
+        );
       } else {
         setErrorMsg(res.data?.message || "Invalid or unregistered email.");
       }
@@ -75,7 +77,10 @@ export default function Forgetpass() {
           navigate("/signin");
         }, 1200);
       } else {
-        setErrorMsg(res.data?.message || "Failed to reset password. Please check your OTP.");
+        setErrorMsg(
+          res.data?.message ||
+            "Failed to reset password. Please check your OTP.",
+        );
       }
     } catch (error) {
       console.error(error);
@@ -106,7 +111,10 @@ export default function Forgetpass() {
             <div className="auth-input-group">
               <label className="auth-label">Registered Email</label>
               <div className="auth-input-wrapper">
-                <FontAwesomeIcon icon={faEnvelope} className="auth-field-icon" />
+                <FontAwesomeIcon
+                  icon={faEnvelope}
+                  className="auth-field-icon"
+                />
                 <input
                   className="auth-input"
                   type="email"
@@ -131,7 +139,12 @@ export default function Forgetpass() {
                   type="button"
                   className="auth-forgot-link"
                   onClick={handleSendOtp}
-                  style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
                 >
                   Resend OTP
                 </button>
@@ -188,12 +201,16 @@ export default function Forgetpass() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   tabIndex={-1}
                 >
-                  <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+                  <FontAwesomeIcon
+                    icon={showConfirmPassword ? faEyeSlash : faEye}
+                  />
                 </button>
               </div>
             </div>
             <button className="auth-btn" type="submit" disabled={loading}>
-              <span>{loading ? "Updating Password..." : "Set New Password"}</span>
+              <span>
+                {loading ? "Updating Password..." : "Set New Password"}
+              </span>
               {!loading && <FontAwesomeIcon icon={faArrowRight} />}
             </button>
           </form>
