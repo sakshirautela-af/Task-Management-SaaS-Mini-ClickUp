@@ -1,0 +1,193 @@
+.notification-div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+.notification-item,
+.notification-item-bold {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  animation: notification-slide-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.notification-item:nth-child(1),
+.notification-item-bold:nth-child(1) {
+  animation-delay: 0.04s;
+}
+
+.notification-item:nth-child(2),
+.notification-item-bold:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.notification-item:nth-child(3),
+.notification-item-bold:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+.notification-item:nth-child(4),
+.notification-item-bold:nth-child(4) {
+  animation-delay: 0.16s;
+}
+
+.notification-item:nth-child(5),
+.notification-item-bold:nth-child(5) {
+  animation-delay: 0.20s;
+}
+
+@keyframes notification-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.notification-item {
+  background-color: var(--bg-primary);
+  color: var(--text-muted);
+}
+
+.notification-item:hover {
+  background-color: var(--bg-secondary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.notification-item-bold {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: color-mix(in srgb, var(--accent-primary) 30%, transparent);
+}
+
+.notification-item-bold::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 14px 0 0 14px;
+  background: linear-gradient(180deg, var(--accent-primary), var(--accent-hover));
+}
+
+.notification-item-bold::after {
+  content: '';
+  position: absolute;
+  top: 18px;
+  right: 52px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 20%, transparent);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 20%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent-primary) 10%, transparent);
+  }
+}
+
+.notification-item-bold:hover {
+  background-color: color-mix(in srgb, var(--accent-primary) 6%, var(--bg-secondary));
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.notification-item p,
+.notification-item-bold p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+.notification-item p {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.notification-item-bold p {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.notification-item button,
+.notification-item-bold button {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  background-color: transparent;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.notification-item button:hover,
+.notification-item-bold button:hover {
+  background-color: var(--bg-hover);
+  color: var(--accent-primary);
+  transform: scale(1.1);
+}
+
+.notification-item button:active,
+.notification-item-bold button:active {
+  transform: scale(0.95);
+}
+
+.notification-div>p[style] {
+  padding: 12px 16px;
+  border-radius: 10px;
+  background-color: var(--badge-red-bg);
+  color: var(--badge-red-text);
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid color-mix(in srgb, var(--badge-red-text) 20%, transparent);
+  margin: 0;
+}
+
+.notification-div>p:not([style]) {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 14px;
+  border: 1px dashed var(--border-color);
+  background-color: var(--bg-secondary);
+  margin: 0;
+}

@@ -15,7 +15,6 @@ export const sendSignUpMail = async (req, res, next) => {
         })
     }
 }
-
 export const sendforgetPassMail = async (req, res, next) => {
     try {
         const { email } = req.body;

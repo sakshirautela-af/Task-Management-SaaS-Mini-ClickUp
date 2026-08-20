@@ -1,38 +1,42 @@
+import React from "react";
 import { NavLink } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHouse,
+  faLayerGroup,
+  faListCheck,
+  faCalendarAlt,
+  faUsers,
+  faGear,
+  faCheckDouble,
+} from "@fortawesome/free-solid-svg-icons";
 import "./Slidebar.css";
-
-const navItems = [
-  { path: "/", label: "Dashboard" },
-  { path: "/projects", label: "Projects" },
-  { path: "/tasks", label: "Tasks" },
-  { path: "/calendar", label: "Calendar" },
-  { path: "/my-tasks", label: "My Tasks" },
-  { path: "/team", label: "Team" },
-  { path: "/reports", label: "Reports" },
-  { path: "/settings", label: "Settings" },
-];
-
-export default function Sidebar() {
+export default function Sidebar({ isCollapsed = false }) {
+  const navItems = [
+    { path: "/dashboard", label: "Dashboard", icon: faHouse },
+    { path: "/projects", label: "Projects", icon: faLayerGroup },
+    { path: "/tasks", label: "Tasks", icon: faListCheck },
+    { path: "/calendar", label: "Calendar", icon: faCalendarAlt },
+    { path: "/team", label: "Teams", icon: faUsers },
+    { path: "/settings", label: "Settings", icon: faGear },
+  ];
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+      <div className="sidebar-logo-header">
+        {!isCollapsed && (
+          <span className="sidebar-brand-text">MiniClickUp</span>
+        )}
+      </div>
       <nav className="sidebar-nav">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) => (isActive ? "active" : "")}
+            title={isCollapsed ? item.label : undefined}
           >
-            {({ isActive }) => (
-              <>
-                <span className="nav-label">{item.label}</span>
-                {isActive && (
-                  <span
-                    className="active-check"
-                    style={{ marginLeft: "auto", fontWeight: "bold" }}
-                  ></span>
-                )}
-              </>
-            )}
+            <FontAwesomeIcon icon={item.icon} className="sidebar-nav-icon" />
+            {!isCollapsed && <span className="nav-label">{item.label}</span>}
           </NavLink>
         ))}
       </nav>

@@ -1,92 +1,120 @@
-import { useState, useEffect } from "react";
-import "./navbar.css";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-export default function Navbar() {
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBell,
+  faBars,
+  faChevronDown,
+  faSun,
+  faMoon,
+} from "@fortawesome/free-solid-svg-icons";
+import { getAllNotifications } from "../api/notificationsApi";
+import "./navbar.css";
+export default function Navbar({
+  onToggleSidebar,
+  isSidebarCollapsed,
+  onOpenNotifications,
+  onOpenUserProfile,
+}) {
   const [user, setUser] = useState(null);
+  const [theme, setTheme] = useState("light");
+  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
-  const [theme, setTheme] = useState("");
-
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    const localTheme = localStorage.getItem("theme");
-    if (localTheme) {
-      setTheme(localTheme);
-      document.documentElement.setAttribute("theme", localTheme);
-    }
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsed = JSON.parse(storedUser);
+        setUser(parsed);
+        if (parsed?.id) {
+          getAllNotifications(parsed.id)
+            .then((res) => {
+              const list = Array.isArray(res?.data)
+                ? res.data
+                : Array.isArray(res)
+                  ? res
+                  : [];
+              const unread = list.filter((n) => !n.isRead).length;
+              setUnreadCount(unread);
+            })
+            .catch((err) => console.error("Error fetching notifs count", err));
+        }
       } catch (e) {
         console.error("Error parsing user from localStorage", e);
       }
     }
+    const savedTheme = localStorage.getItem("theme") || "light";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("theme", savedTheme);
+    document.body.setAttribute("theme", savedTheme);
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    setUser(null);
-    navigate("/signin");
-  };
-
   const toggleTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
-    localStorage.setItem("theme", nextTheme);
     setTheme(nextTheme);
+    localStorage.setItem("theme", nextTheme);
     document.documentElement.setAttribute("theme", nextTheme);
+    document.body.setAttribute("theme", nextTheme);
   };
+  const initial = (user?.firstName || "U").charAt(0).toUpperCase();
   return (
     <header className="topnav">
-      <div className="app-logo">MiniClickUp</div>
-      <div className="search-bar-wrapper">
-        <svg
-          className="search-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
+      <div className="topnav-left">
+        <button
+          className="btn-sidebar-hamburger"
+          onClick={onToggleSidebar}
+          aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input
-          type="text"
-          placeholder="Search projects, tasks..."
-          className="search-input"
-        />
-      </div>
-
-      <div className="topnav-right">
-        <button onClick={toggleTheme} className="icon-btn theme-toggle">
-          {theme === "light" ? "Dark" : "Light"}
+          <FontAwesomeIcon icon={faBars} />
         </button>
-
+      </div>
+      <div className="topnav-right">
+        <button
+          className="navbar-theme-toggle-btn"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+        >
+          <FontAwesomeIcon
+            icon={theme === "light" ? faMoon : faSun}
+            className="theme-icon-svg"
+          />
+        </button>
+        <button
+          className="navbar-bell-btn"
+          onClick={onOpenNotifications}
+          aria-label="Open notifications"
+          title="Notifications"
+        >
+          <FontAwesomeIcon icon={faBell} className="navbar-bell-icon" />
+          {unreadCount > 0 && (
+            <span className="navbar-notif-badge">{unreadCount}</span>
+          )}
+        </button>
         {user ? (
-          <div className="user-profile-menu">
-            <div className="avatar">
-              {user.firstName ? user.firstName.charAt(0) : "U"}
-            </div>
-            <div className="user-info">
-              <span className="user-name">{user.firstName || user.email}</span>
-            </div>
-            <button
-              className="logout-btn"
-              onClick={handleLogout}
-              style={{
-                marginLeft: "10px",
-                background: "transparent",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                padding: "4px 8px",
-                cursor: "pointer",
-              }}
-            >
-              Logout
-            </button>
+          <div
+            className="navbar-user-pill"
+            onClick={() => onOpenUserProfile && onOpenUserProfile(user)}
+            title="View Profile"
+          >
+            {user.image ? (
+              <img
+                src={user.image}
+                alt={user.firstName}
+                className="navbar-user-avatar-img"
+              />
+            ) : (
+              <div className="navbar-user-avatar-placeholder">{initial}</div>
+            )}
+            <FontAwesomeIcon
+              icon={faChevronDown}
+              className="navbar-chevron-icon"
+            />
           </div>
         ) : (
-          <Link to="/signin">Sign In</Link>
+          <Link to="/signin" className="navbar-signin-link">
+            Sign In
+          </Link>
         )}
       </div>
     </header>

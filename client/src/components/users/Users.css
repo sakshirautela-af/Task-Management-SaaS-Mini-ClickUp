@@ -1,49 +1,56 @@
+/* ==========================================================================
+   User Profile Settings Component
+   ========================================================================== */
+
 .profile-page {
   display: flex;
   justify-content: center;
-  align-padding: 2rem;
-  background-color: var(--bg-primary);
   min-height: 100vh;
-  font-family: 'Inter', sans-serif;
+  padding: 2rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .profile-card {
-  background: white;
-  padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 500px;
   margin-top: 2rem;
+  padding: 2.5rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .profile-card h2 {
-  text-align: center;
-  color: var(--text-primary);
   margin-bottom: 1.5rem;
-  font-size: 1.8rem;
+  color: var(--text-primary);
+  font-size: 1.75rem;
+  text-align: center;
 }
 
+/* Feedback Messages */
 .error-message {
-  color: var(--badge-red-text);
-  background: var(--badge-red-bg);
-  padding: 0.75rem;
-  border-radius: 6px;
   margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--badge-red-bg);
+  color: var(--badge-red-text);
+  font-size: 14px;
   text-align: center;
-  font-size: 0.9rem;
 }
 
 .success-message {
-  color: var(--badge-green-text);
-  background: var(--badge-green-bg);
-  padding: 0.75rem;
-  border-radius: 6px;
   margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--badge-green-bg);
+  color: var(--badge-green-text);
+  font-size: 14px;
   text-align: center;
-  font-size: 0.9rem;
 }
 
+/* Form Styles */
 .profile-form {
   display: flex;
   flex-direction: column;
@@ -57,55 +64,46 @@
 }
 
 .form-group label {
-  font-size: 0.9rem;
   color: var(--text-secondary);
+  font-size: 14px;
   font-weight: 500;
 }
 
-.profile-input, .profile-select {
+.profile-input,
+.profile-select {
   padding: 0.8rem;
-  border: 1px solid #ddd;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.profile-input:focus, .profile-select:focus {
+.profile-input:focus,
+.profile-select:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-}
-
-.profile-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-  color: var(--text-primary);
-  cursor: pointer;
-}
-
-.profile-checkbox input {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
 }
 
 .profile-btn {
-  background: var(--accent-primary);
-  color: white;
+  margin-top: 0.5rem;
   padding: 0.9rem;
+  background: var(--accent-gradient);
   border: none;
   border-radius: 8px;
-  font-size: 1.1rem;
+  color: #ffffff;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s, transform 0.1s;
-  margin-top: 0.5rem;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .profile-btn:hover {
-  background: var(--accent-hover);
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
 }
 
 .profile-btn:active {

@@ -4,7 +4,6 @@ import path from "path";
 import fs, { unlink } from "fs";
 import { promisify } from "util";
 const uploadLocation = path.resolve(import.meta.dirname, "../../uploads");
-
 const addFileUrl = (req, file) => {
   if (!file) return file;
   return {
@@ -108,7 +107,6 @@ export const deleteFile = async (req, res, next) => {
     next(error);
   }
 };
-
 export const downloadFile = async (req, res, next) => {
   try {
     const fileId = req.params.id;

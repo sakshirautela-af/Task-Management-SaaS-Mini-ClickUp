@@ -8,25 +8,28 @@ datasource db {
 }
 
 model Users {
-  id               Int        @id @default(autoincrement())
-  email            String     @unique
+  id               Int              @id @default(autoincrement())
+  email            String           @unique
   password         String
   firstName        String
   lastName         String
-  phone            String?    @unique
-  role             Role       @default(USER)
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  assignedTask     Tasks[]    @relation("AssignedTo")
-  createdTask      Tasks[]    @relation("AssignedBy")
-  createdProjects  Projects[] @relation("createdBy")
-  updatedProjects  Projects[] @relation("updatedBy")
-  assignedProjects Projects[] @relation("assignId")
-  isActive         Boolean?   @default(true)
+  phone            String?          @unique
+  role             Role             @default(USER)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  isActive         Boolean?         @default(true)
   otp              String?
   otpExpiry        DateTime?
-  isVerified       Boolean    @default(false)
-  image            String?
+  isVerified       Boolean          @default(false)
+  image            Bytes?           @db.LongBlob
+  
+  assignedTasks    Tasks[]          @relation("AssignedTo")
+  createdTasks     Tasks[]          @relation("AssignedBy")
+  createdProjects  Projects[]       @relation("createdBy")
+  updatedProjects  Projects[]       @relation("updatedBy")
+  assignedProjects Projects[]       @relation("assignId")
+  preference       UserPreference?
+  notifications    Notifications[]  @relation("UserNotifications")
 }
 
 model SignupOtp {
@@ -44,36 +47,59 @@ model ForgetpassOtp {
 }
 
 model Projects {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
+  id          Int      @id @default(autoincrement())
+  name        String   
   description String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   startDate   DateTime
   endDate     DateTime?
-  status      Status    @default(TODO)
+  status      Status   @default(TODO)
+  isActive    Boolean? @default(true)
+  
   createdBy   Int
   updatedBy   Int?
   assignId    Int?
 
-  creator  Users  @relation("createdBy", fields: [createdBy], references: [id])
-  updater  Users? @relation("updatedBy", fields: [updatedBy], references: [id])
-  assignTo Users? @relation("assignId", fields: [assignId], references: [id])
-
-  tasks Tasks[]
-
-  isActive Boolean? @default(true)
-  files    Files[]
+  creator     Users    @relation("createdBy", fields: [createdBy], references: [id])
+  updater     Users?   @relation("updatedBy", fields: [updatedBy], references: [id])
+  assignTo    Users?   @relation("assignId", fields: [assignId], references: [id])
+  tasks       Tasks[]
+  files       Files[]
 
   @@index([createdBy])
   @@index([updatedBy])
 }
 
+model UserPreference {
+  id           Int     @id @default(autoincrement())
+  theme        String  @default("light")
+  notification String?
+  
+  userId       Int     @unique
+  user         Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notifications {
+  id           Int      @id @default(autoincrement())
+  notification String
+  from         Int
+  isRead       Boolean? @default(false)
+  createdAt    DateTime @default(now())
+  
+  userId       Int
+  user         Users    @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 model Files {
   id         Int       @id @default(autoincrement())
-  location       String @unique
-  projects   Projects? @relation(fields: [projectsId], references: [id])
+  location   String    @unique
   projectsId Int?
+  projects   Projects? @relation(fields: [projectsId], references: [id], onDelete: Cascade)
+
+  @@index([projectsId])
 }
 
 model Tasks {
@@ -87,13 +113,16 @@ model Tasks {
   endDate     DateTime
   priority    TaskPriority @default(NORMAL)
   status      TaskStatus   @default(PENDING)
+  
+  // Foreign Keys
   projectId   Int
   assignedBy  Int?
   assignedTo  Int?
 
-  project  Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignee Users?   @relation("AssignedTo", fields: [assignedTo], references: [id], onDelete: SetNull)
-  assigner Users?   @relation("AssignedBy", fields: [assignedBy], references: [id], onDelete: SetNull)
+  // Relations
+  project     Projects     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee    Users?       @relation("AssignedTo", fields: [assignedTo], references: [id], onDelete: SetNull)
+  assigner    Users?       @relation("AssignedBy", fields: [assignedBy], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([assignedTo])

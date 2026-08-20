@@ -1,6 +1,6 @@
 import * as taskService from "../service/tasks.service.js";
 import * as userService from "../service/users.service.js";
-
+import * as notificationController from "../controllers/notifications.controller.js";
 export const createTask = async (req, res, next) => {
   try {
     const {
@@ -14,6 +14,7 @@ export const createTask = async (req, res, next) => {
       assignedBy,
       assignedTo,
     } = req.body || {};
+
     if (!name || !projectId) {
       return res.status(400).json({
         message: "Missing required fields: name and projectId",
@@ -33,6 +34,7 @@ export const createTask = async (req, res, next) => {
         return res.status(404).json({ message: "Assignee user not found" });
       }
     }
+
     const task = await taskService.createTask({
       name,
       description,
@@ -44,6 +46,14 @@ export const createTask = async (req, res, next) => {
       assignedBy,
       assignedTo,
     });
+    if (assignedTo) {
+      await notificationController.createNotification(
+        req,
+        assignedTo,
+        assignedBy || null,
+        `Task ${name}`,
+      );
+    }
 
     res.status(201).json({
       message: "Task created successfully",
@@ -53,6 +63,7 @@ export const createTask = async (req, res, next) => {
     next(error);
   }
 };
+
 export const getPaginationData = async (req, res, next) => {
   try {
     const page = req.params.page;
@@ -95,19 +106,36 @@ export const getTasksByProject = async (req, res, next) => {
     next(error);
   }
 };
-
 export const filterTasks = async (req, res, next) => {
   try {
-    const { projectId, search, priority, status } = req.query || {};
-    const tasks = await taskService.filterTasks(
+    const {
+      userId,
+      tab,
       projectId,
       search,
       priority,
       status,
-    );
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      order,
+    } = req.query || {};
+    const data = await taskService.filterTasksPaginated({
+      userId,
+      tab,
+      projectId,
+      search,
+      priority,
+      status,
+      page,
+      limit,
+      sortBy,
+      sortOrder: sortOrder || order,
+    });
     res.status(200).json({
       message: "Filtered tasks retrieved successfully",
-      data: tasks,
+      data,
     });
   } catch (error) {
     next(error);
@@ -115,23 +143,38 @@ export const filterTasks = async (req, res, next) => {
 };
 export const filterTasksByUser = async (req, res, next) => {
   try {
-    const { userId, projectId, search, priority, status } = req.query || {};
-    const tasks = await taskService.filterTasksByUser(
+    const {
       userId,
       projectId,
       search,
       priority,
       status,
-    );
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      order,
+    } = req.query || {};
+    const data = await taskService.filterTasksPaginated({
+      userId,
+      tab: "my",
+      projectId,
+      search,
+      priority,
+      status,
+      page,
+      limit,
+      sortBy,
+      sortOrder: sortOrder || order,
+    });
     res.status(200).json({
       message: "Filtered tasks retrieved successfully",
-      data: tasks,
+      data,
     });
   } catch (error) {
     next(error);
   }
 };
-
 export const getTaskById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -147,7 +190,6 @@ export const getTaskById = async (req, res, next) => {
     next(error);
   }
 };
-
 export const getTaskByUser = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -168,26 +210,22 @@ export const getTaskByUser = async (req, res, next) => {
     next(error);
   }
 };
-
 export const updateTask = async (req, res, next) => {
   try {
     const { id } = req.params;
     const body = req.body || {};
-
     if (body.assignedBy) {
       const assignerUser = await userService.getUserByID(body.assignedBy);
       if (!assignerUser) {
         return res.status(404).json({ message: "Assigner user not found" });
       }
     }
-
     if (body.assignedTo) {
       const assigneeUser = await userService.getUserByID(body.assignedTo);
       if (!assigneeUser) {
         return res.status(404).json({ message: "Assignee user not found" });
       }
     }
-
     const task = await taskService.updateTask(id, body);
     res.status(200).json({
       message: "Task updated successfully",
@@ -197,7 +235,6 @@ export const updateTask = async (req, res, next) => {
     next(error);
   }
 };
-
 export const deleteTask = async (req, res, next) => {
   try {
     const { id } = req.params;

@@ -36,7 +36,6 @@ export const getFileByFileId = async (id) => {
   });
   return res;
 };
-
 export const updateFile = async (projectId, location) => {
   const res = await prisma.files.update({
     data: {
@@ -46,7 +45,6 @@ export const updateFile = async (projectId, location) => {
   });
   return res;
 };
-
 export const deletFile = async (fileId) => {
   const res = await prisma.files.delete({
     where: {

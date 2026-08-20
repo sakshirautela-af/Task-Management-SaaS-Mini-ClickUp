@@ -4,7 +4,6 @@ dotenv.config()
 export const brevo = new BrevoClient({
     apiKey: process.env.BREVO_API_KEY
 });
-
 export const sendSignupOtpEmail=async(otp,email) =>{
     try{
         const res= await brevo.transactionalEmails.sendTransacEmail({
@@ -24,7 +23,6 @@ export const sendSignupOtpEmail=async(otp,email) =>{
         return await {error}
     }
 }
-
 export const sendForgetOtpEmail=async(otp,email) =>{
     try{
         const res=brevo.transactionalEmails.sendTransacEmail({
@@ -44,5 +42,3 @@ export const sendForgetOtpEmail=async(otp,email) =>{
         return await {error}
     }
 }
-
-

@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  getAllTasks,
-  deleteTasks,
-  filterTasks,
-  filterTasksByUser,
-} from "../api/tasksApi";
+import { deleteTasks, filterTasksByUser } from "../api/tasksApi";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,19 +7,18 @@ import {
   faPen,
   faTrash,
   faEye,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import "./task.css";
 
-export default function Tasks({ projectId }) {
+export default function MyTasks({ projectId }) {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPriority, setFilterPriority] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-
   const navigate = useNavigate();
 
   const fetchTasks = async () => {
@@ -34,7 +28,6 @@ export default function Tasks({ projectId }) {
       const userStr = localStorage.getItem("user");
       const user = userStr ? JSON.parse(userStr) : null;
       const userId = user?.id;
-
       const response = await filterTasksByUser(userId, projectId, {
         search: searchQuery,
         priority: filterPriority,
@@ -77,13 +70,11 @@ export default function Tasks({ projectId }) {
 
   const handleDelete = async (task) => {
     const confirmDelete = window.confirm(
-      `Are you sure you want to delete "${task.name}"?`,
+      `Are you sure you want to delete "${task.name}"?`
     );
-
     if (!confirmDelete) {
       return;
     }
-
     try {
       await deleteTasks(task.id);
       setTasks((prevTasks) => prevTasks.filter((item) => item.id !== task.id));
@@ -95,171 +86,134 @@ export default function Tasks({ projectId }) {
   };
 
   return (
-    <div className="content-split">
-      <div className="workspace">
-        <div className="left-pannel">
-          <div>
-            <button className="create-project-btn" onClick={handleCreateTask}>
-              Create New Task
-            </button>
-          </div>
-          <div className="project-div">
-            <h2>{projectId ? "Project Tasks" : "All Tasks"}</h2>
+    <div className="tasks-management-page">
+      <div className="tasks-page-header">
+        <div className="header-title-block">
+          <h1 className="main-page-title">
+            {projectId ? "Project Tasks" : "My Tasks"}
+          </h1>
+          <p className="main-page-subtitle">
+            View and manage tasks assigned to you.
+          </p>
+        </div>
+        <button className="btn-new-task" onClick={handleCreateTask}>
+          <FontAwesomeIcon icon={faPlus} />
+          <span>New Task</span>
+        </button>
+      </div>
+
+      <div className="tasks-table-main-card">
+        <div className="table-top-bar">
+          <h2 className="table-section-title">Tasks List</h2>
+          <div className="table-search-wrapper">
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="table-search-input"
+            />
           </div>
         </div>
 
-        {}
-        <div className="task-filters-section">
-          <input
-            className="premium-input small-input filter-input"
-            placeholder="Search tasks..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <select
-            className="premium-select small-input filter-select"
-            value={filterPriority}
-            onChange={(e) => setFilterPriority(e.target.value)}
-          >
-            <option value="">All Priorities</option>
-            <option value="LOW">Low</option>
-            <option value="NORMAL">Normal</option>
-            <option value="HIGH">High</option>
-          </select>
-          <select
-            className="premium-select small-input filter-select"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <option value="">All Statuses</option>
-            <option value="PENDING">Pending</option>
-            <option value="INPROGRESS">In Progress</option>
-            <option value="COMPLETED">Completed</option>
-          </select>
-        </div>
+        {error && <div className="modal-alert-box error">{error}</div>}
 
-        {error && <div className="error-message">{error}</div>}
-
-        {loading && <div className="loading">Loading tasks...</div>}
-
-        {!loading && !error && (
-          <>
-            <div className="status-div">
-              <div className="total-project">
-                <h3>Total Tasks</h3>
-                <strong>{tasks.length}</strong>
-              </div>
-              <div className="active-project">
-                <h3>In Progress</h3>
-                <strong>
-                  {tasks.filter((t) => t.status === "INPROGRESS").length}
-                </strong>
-              </div>
-              <div className="completed-project">
-                <h3>Completed</h3>
-                <strong>
-                  {tasks.filter((t) => t.status === "COMPLETED").length}
-                </strong>
-              </div>
-              <div className="hold-project">
-                <h3>Pending</h3>
-                <strong>
-                  {tasks.filter((t) => t.status === "PENDING").length}
-                </strong>
-              </div>
-            </div>
-
-            <div className="projectdive">
-              <div className="active-tab">Tasks List</div>
-            </div>
-
-            <div className="projects-list">
-              {tasks.length === 0 ? (
-                <p>No tasks found.</p>
+        <div className="table-responsive-box">
+          <table className="tasks-list-table">
+            <thead>
+              <tr>
+                <th>Task Name</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="6" className="empty-table-cell">
+                    <p>Loading tasks...</p>
+                  </td>
+                </tr>
+              ) : tasks.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="empty-table-cell">
+                    <p>No tasks found.</p>
+                  </td>
+                </tr>
               ) : (
-                <table className="projects-table">
-                  <thead>
-                    <tr>
-                      <th>Task Name</th>
-                      <th>Priority</th>
-                      <th>Status</th>
-                      <th>Due Date</th>
-                      <th>Description</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tasks.map((task) => (
-                      <tr key={task.id}>
-                        <td>
-                          <div className="project-name">
-                            <strong>{task.name}</strong>
-                          </div>
-                        </td>
-                        <td>
-                          <span
-                            className={`task-priority priority-${task.priority.toLowerCase()}`}
-                          >
-                            {task.priority}
-                          </span>
-                        </td>
-                        <td>
-                          <span
-                            className={`task-status status-${task.status.toLowerCase()}`}
-                          >
-                            {task.status}
-                          </span>
-                        </td>
-                        <td>
-                          {task.endDate
-                            ? new Date(task.endDate).toLocaleDateString()
-                            : "No due date"}
-                        </td>
-                        <td>
-                          {task.description
-                            ? task.description.length > 30
-                              ? task.description.substring(0, 30) + "..."
-                              : task.description
-                            : "No description"}
-                        </td>
-                        <td className="action-cell">
-                          <div className="menu-container">
-                            <button
-                              className="menu-trigger"
-                              onClick={() => handleOperations(task)}
-                            >
-                              <FontAwesomeIcon icon={faEllipsisVertical} />
+                tasks.map((task) => (
+                  <tr key={task.id}>
+                    <td>
+                      <div className="task-details-col">
+                        <span className="task-row-name">{task.name}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span
+                        className={`task-priority-tag tag-${(
+                          task.priority || "NORMAL"
+                        ).toLowerCase()}`}
+                      >
+                        {task.priority || "Normal"}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`task-status-pill pill-${(
+                          task.status || "INPROGRESS"
+                        ).toLowerCase()}`}
+                      >
+                        {task.status || "In Progress"}
+                      </span>
+                    </td>
+                    <td className="date-text-cell">
+                      {task.endDate
+                        ? new Date(task.endDate).toLocaleDateString()
+                        : "No due date"}
+                    </td>
+                    <td className="updated-text-cell">
+                      {task.description
+                        ? task.description.length > 35
+                          ? task.description.substring(0, 35) + "..."
+                          : task.description
+                        : "No description"}
+                    </td>
+                    <td className="action-cell">
+                      <div className="actions-dropdown-wrapper">
+                        <button
+                          className="btn-kebab-menu"
+                          onClick={() => handleOperations(task)}
+                          aria-label="Actions"
+                        >
+                          <FontAwesomeIcon icon={faEllipsisVertical} />
+                        </button>
+                        {selectedTask?.id === task.id && (
+                          <div className="kebab-popup-menu">
+                            <button onClick={() => handleView(task)}>
+                              <FontAwesomeIcon icon={faEye} /> View Details
                             </button>
-
-                            {selectedTask?.id === task.id && (
-                              <div className="action-menu">
-                                <button onClick={() => handleView(task)}>
-                                  <FontAwesomeIcon icon={faEye} />
-                                  <span>View</span>
-                                </button>
-                                <button onClick={() => handleUpdate(task)}>
-                                  <FontAwesomeIcon icon={faPen} />
-                                  <span>Edit</span>
-                                </button>
-                                <button
-                                  className="delete-menu-item"
-                                  onClick={() => handleDelete(task)}
-                                >
-                                  <FontAwesomeIcon icon={faTrash} />
-                                  <span>Delete</span>
-                                </button>
-                              </div>
-                            )}
+                            <button onClick={() => handleUpdate(task)}>
+                              <FontAwesomeIcon icon={faPen} /> Edit Task
+                            </button>
+                            <button
+                              className="delete-item-btn"
+                              onClick={() => handleDelete(task)}
+                            >
+                              <FontAwesomeIcon icon={faTrash} /> Delete
+                            </button>
                           </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
               )}
-            </div>
-          </>
-        )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

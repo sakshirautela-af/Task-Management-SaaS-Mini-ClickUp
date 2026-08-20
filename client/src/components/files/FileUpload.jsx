@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 export default function FileUpload() {
   const [file, setFile] = useState(null);
   const [error, setError] = useState();

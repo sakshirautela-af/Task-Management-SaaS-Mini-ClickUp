@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUserDetails, updateUser } from "../api/userApi";
+import { Role } from "../../enums";
 import "./Users.css";
 
 export default function UsersUpdate() {
@@ -7,9 +8,7 @@ export default function UsersUpdate() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-  const [role, setRole] = useState("USER");
-  const [isActive, setIsActive] = useState(true);
-
+  const [role, setRole] = useState(Role.USER);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(true);
@@ -21,21 +20,13 @@ export default function UsersUpdate() {
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
           setUserId(parsedUser.id);
-
           const res = await getUserDetails(parsedUser.id);
-          if (res?.data) {
-            setFirstName(res.data.firstName || "");
-            setLastName(res.data.lastName || "");
-            setPhone(res.data.phone || "");
-            setRole(res.data.role || "USER");
-            setIsActive(res.data.isActive !== false);
-          } else if (res) {
-            
-            setFirstName(res.firstName || "");
-            setLastName(res.lastName || "");
-            setPhone(res.phone || "");
-            setRole(res.role || "USER");
-            setIsActive(res.isActive !== false);
+          const userData = res?.data || res;
+          if (userData) {
+            setFirstName(userData.firstName || "");
+            setLastName(userData.lastName || "");
+            setPhone(userData.phone || "");
+            setRole(userData.role || "USER");
           }
         } else {
           setErrorMsg("No logged in user found.");
@@ -47,7 +38,6 @@ export default function UsersUpdate() {
         setLoading(false);
       }
     };
-
     fetchUserData();
   }, []);
 
@@ -56,34 +46,31 @@ export default function UsersUpdate() {
     setErrorMsg("");
     setSuccessMsg("");
 
-    if (!firstName || !lastName) {
+    if (!firstName.trim() || !lastName.trim()) {
       setErrorMsg("First Name and Last Name are required.");
       return;
     }
 
     try {
       const userData = {
-        firstName,
-        lastName,
-        phone,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        phone: phone.trim(),
         role,
-        isActive,
       };
 
       const res = await updateUser(userId, userData);
-      if (res.ok) {
+      if (res.ok || res.data) {
         setSuccessMsg("Profile updated successfully!");
-
-        // Update local storage if needed
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
           const updatedUser = {
             ...parsedUser,
-            firstName,
-            lastName,
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
             role,
-            phone,
+            phone: phone.trim(),
           };
           localStorage.setItem("user", JSON.stringify(updatedUser));
         }
@@ -120,6 +107,7 @@ export default function UsersUpdate() {
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               placeholder="First Name"
+              required
             />
           </div>
 
@@ -131,6 +119,7 @@ export default function UsersUpdate() {
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               placeholder="Last Name"
+              required
             />
           </div>
 
@@ -152,19 +141,11 @@ export default function UsersUpdate() {
               value={role}
               onChange={(e) => setRole(e.target.value)}
             >
-              <option value="USER">USER</option>
-              <option value="ADMIN">ADMIN</option>
+              <option value={Role.USER}>{Role.USER}</option>
+              <option value={Role.ADMIN}>{Role.ADMIN}</option>
+              <option value={Role.SUPERADMIN}>{Role.SUPERADMIN}</option>
             </select>
           </div>
-
-          <label className="profile-checkbox">
-            <input
-              type="checkbox"
-              checked={isActive}
-              onChange={(e) => setIsActive(e.target.checked)}
-            />
-            Account is Active
-          </label>
 
           <button className="profile-btn" type="submit">
             Save Changes
