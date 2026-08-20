@@ -28,7 +28,11 @@ export const initiateSignup = async (email) => {
       otpExpiry: otpExpiry,
     },
   });
-  const emailSent = await sendSignupOtpEmail(otp, email);
+  const emailSent = await sendSignupOtpEmail(
+    otp,
+    email,
+    existingUser.firstName,
+  );
   if (!emailSent) {
     return { error: "Failed to send OTP email", status: 500 };
   }
@@ -53,7 +57,11 @@ export const initiateForgetPassword = async (email) => {
       otpExpiry: otpExpiry,
     },
   });
-  const emailSent = await sendForgetOtpEmail(otp, email);
+  const emailSent = await sendForgetOtpEmail(
+    otp,
+    email,
+    existingUser.firstName,
+  );
   if (!emailSent) {
     return { error: "Failed to send OTP email", status: 500 };
   }
