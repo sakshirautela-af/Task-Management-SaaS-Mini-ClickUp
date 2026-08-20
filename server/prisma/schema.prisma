@@ -3,9 +3,11 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
+
 
 model Users {
   id               Int              @id @default(autoincrement())
@@ -21,7 +23,7 @@ model Users {
   otp              String?
   otpExpiry        DateTime?
   isVerified       Boolean          @default(false)
-  image            Bytes?           @db.LongBlob
+  image            Bytes?           @db.ByteA
   
   assignedTasks    Tasks[]          @relation("AssignedTo")
   createdTasks     Tasks[]          @relation("AssignedBy")
