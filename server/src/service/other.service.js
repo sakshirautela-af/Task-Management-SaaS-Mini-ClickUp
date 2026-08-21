@@ -31,7 +31,7 @@ export const initiateSignup = async (email) => {
   const emailSent = await sendSignupOtpEmail(
     otp,
     email,
-    existingUser.firstName,
+    existingUser?.existingUser?.firstName ?? "Guest",
   );
   if (!emailSent) {
     return { error: "Failed to send OTP email", status: 500 };
@@ -60,7 +60,7 @@ export const initiateForgetPassword = async (email) => {
   const emailSent = await sendForgetOtpEmail(
     otp,
     email,
-    existingUser.firstName,
+    existingUser?.existingUser?.firstName ?? "Guest",
   );
   if (!emailSent) {
     return { error: "Failed to send OTP email", status: 500 };

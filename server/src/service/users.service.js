@@ -36,11 +36,12 @@ export const createUser = async (data) => {
 };
 
 export const getUserByEmail = async (email) => {
-  return await prisma.users.findFirst({
+  const a = await prisma.users.findFirst({
     where: {
       email: email,
     },
   });
+  return a;
 };
 
 export const getUser = async () => {

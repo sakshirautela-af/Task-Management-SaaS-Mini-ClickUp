@@ -6,6 +6,9 @@ export const brevo = new BrevoClient({
 });
 export const sendSignupOtpEmail = async (otp, email, name) => {
   try {
+    if (!name) {
+      name = email.split("@")[0];
+    }
     const res = await brevo.transactionalEmails.sendTransacEmail({
       subject: "MiniClickUp Signup OTP Verification",
       textContent: `Your MiniClickUp signup verification code is ${otp}. Please do not share this with anyone.`,
@@ -25,13 +28,16 @@ export const sendSignupOtpEmail = async (otp, email, name) => {
       },
       to: [{ email: email, name: name }],
     });
-    return await { res };
+    return { res };
   } catch (error) {
-    return await { error };
+    return { error };
   }
 };
 export const sendForgetOtpEmail = async (otp, email, name) => {
   try {
+    if (!name) {
+      name = email.split("@")[0];
+    }
     const res = brevo.transactionalEmails.sendTransacEmail({
       subject: "MiniClickUp Password Reset Request",
       textContent: `Your MiniClickUp password reset code is ${otp}. Please do not share this with anyone.`,
@@ -51,8 +57,9 @@ export const sendForgetOtpEmail = async (otp, email, name) => {
       },
       to: [{ email: email, name: name }],
     });
-    return await { res };
+    return { res };
   } catch (error) {
-    return await { error };
+    console.error("sendForgetOtpEmail error:", error);
+    return { error };
   }
 };
